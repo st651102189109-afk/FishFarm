@@ -15,20 +15,26 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Kanit', sans-serif; margin: 0; background: var(--bg); padding-bottom: 100px; color: #1e293b; }
         
-        header { background: var(--primary); color: white; padding: 20px; border-radius: 0 0 30px 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
-        header h3 { margin: 0; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
-        .status-info { font-size: 0.75rem; opacity: 0.9; margin-top: 5px; display: flex; align-items: center; gap: 5px; }
+        header { background: var(--primary); color: white; padding: 15px 20px; border-radius: 0 0 30px 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+        /* ส่วน Header ที่ใส่โลโก้ */
+        .header-title { display: flex; align-items: center; gap: 12px; }
+        .header-title img { height: 45px; width: 45px; border-radius: 50%; border: 2px solid white; background: white; object-fit: cover; }
+        .header-title h3 { margin: 0; font-size: 1.1rem; line-height: 1.2; }
+        
+        .status-info { font-size: 0.75rem; opacity: 0.9; margin-top: 8px; display: flex; align-items: center; gap: 5px; }
 
         .container { max-width: 600px; margin: 0 auto; padding: 15px; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
+        /* Dashboard */
         .sensor-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
         .sensor-card { background: white; padding: 12px 5px; border-radius: 18px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .sensor-card i { font-size: 1.1rem; margin-bottom: 5px; display: block; }
         .sensor-card .val { font-size: 0.95rem; font-weight: 600; }
         .sensor-card small { color: #64748b; font-size: 0.65rem; display: block; }
 
+        /* Panel & Layout */
         .panel { background: white; border-radius: 22px; padding: 18px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.04); border-left: 6px solid var(--primary); }
         .panel-secondary { border-left-color: var(--secondary); }
         .panel-header { display: flex; justify-content: flex-start; align-items: center; gap: 10px; margin-bottom: 15px; font-weight: 500; font-size: 1rem; }
@@ -37,10 +43,11 @@
         .row:last-child { border: none; }
 
         .input-group { display: flex; align-items: center; background: #f8fafc; padding: 6px 12px; border-radius: 12px; border: 1px solid #e2e8f0; }
-        .num-input { border: none; background: transparent; font-family: 'Kanit'; font-size: 1rem; color: var(--primary); width: 50px; text-align: right; outline: none; font-weight: 500; }
+        .num-input { border: none; background: transparent; font-family: 'Kanit'; font-size: 1rem; color: var(--primary); width: 45px; text-align: right; outline: none; font-weight: 500; }
         .time-input { border: none; background: transparent; font-family: 'Kanit'; font-size: 0.9rem; outline: none; width: 85px; }
         .dur-input { border: none; background: transparent; font-family: 'Kanit'; font-size: 0.95rem; color: var(--red); width: 55px; text-align: center; outline: none; }
 
+        /* UI Elements */
         .switch { position: relative; width: 42px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; border-radius: 34px; transition: .4s; }
@@ -66,29 +73,32 @@
 <body>
 
 <header>
-    <h3><i class="fas fa-fish"></i> โรงเรือนบ่อเลี้ยงปลาอัจฉริยะ</h3>
+    <div class="header-title">
+        <img src="logo2.png" alt="Logo">
+        <h3>Smart Fish Farm<br><span style="font-weight: 300; font-size: 0.8rem;">Master Control System</span></h3>
+    </div>
     <div class="status-info">
         <i class="fas fa-circle" id="dot" style="color: #cbd5e1;"></i> 
-        <span id="status-text">Connecting...</span>
+        <span id="status-text">กำลังเชื่อมต่อ...</span>
     </div>
 </header>
 
 <div class="container">
     <div id="tab-auto" class="tab-content active">
         <div class="sensor-grid">
-            <div class="sensor-card"><i class="fas fa-water" style="color:#0288d1"></i><span class="val" id="lvl-v">--</span><small>ระดับน้ำ</small></div>
-            <div class="sensor-card"><i class="fas fa-bolt" style="color:#fbc02d"></i><span class="val" id="tds-v">--</span><small>ความขุ่น</small></div>
-            <div class="sensor-card"><i class="fas fa-temperature-high" style="color:#f44336"></i><span class="val" id="temp-v">--</span><small>อุณหภูมิ</small></div>
-            <div class="sensor-card"><i class="fas fa-flask" style="color:#9c27b0"></i><span class="val" id="ph-v">--</span><small>ค่า pH ของน้ำ</small></div>
+            <div class="sensor-card"><i class="fas fa-water" style="color:#0288d1"></i><span class="val" id="lvl-v">--</span><small>Level</small></div>
+            <div class="sensor-card"><i class="fas fa-bolt" style="color:#fbc02d"></i><span class="val" id="tds-v">--</span><small>TDS</small></div>
+            <div class="sensor-card"><i class="fas fa-temperature-high" style="color:#f44336"></i><span class="val" id="temp-v">--</span><small>Temp</small></div>
+            <div class="sensor-card"><i class="fas fa-flask" style="color:#9c27b0"></i><span class="val" id="ph-v">--</span><small>pH</small></div>
         </div>
 
         <div class="panel">
-            <div class="panel-header" style="color: var(--primary);"><i class="fas fa-robot"></i> ระบายน้ำอัตโนมัติ (TDS/pH)</div>
+            <div class="panel-header" style="color: var(--primary);"><i class="fas fa-robot"></i> ถ่ายน้ำอัตโนมัติ (TDS/pH)</div>
             
             <div class="row">
                 <div style="flex:1;">
-                    <span style="font-size:0.9rem;"><i class="fas fa-vial"></i> ค่าความขุ่น ></span>
-                    <div style="font-size:0.65rem; color:#94a3b8;">เมื่อสกปรกเกิน / นาน (m:s):</div>
+                    <span style="font-size:0.9rem;"><i class="fas fa-vial"></i> TDS ></span>
+                    <div style="font-size:0.65rem; color:#94a3b8;">เปิดวาล์วนาน (นาที:วินาที):</div>
                 </div>
                 <div style="display:flex; align-items:center; gap:5px;">
                     <div class="input-group"><input type="number" id="l-tds" class="num-input" onchange="save()"></div>
@@ -99,8 +109,8 @@
             
             <div class="row">
                 <div style="flex:1;">
-                    <span style="font-size:0.9rem;"><i class="fas fa-skull-crossbones"></i> ค่า pH <</span>
-                    <div style="font-size:0.65rem; color:#94a3b8;">เมื่อน้ำเป็นกรด / นาน (m:s):</div>
+                    <span style="font-size:0.9rem;"><i class="fas fa-skull-crossbones"></i> pH <</span>
+                    <div style="font-size:0.65rem; color:#94a3b8;">เปิดวาล์วนาน (นาที:วินาที):</div>
                 </div>
                 <div style="display:flex; align-items:center; gap:5px;">
                     <div class="input-group"><input type="number" step="0.1" id="l-ph" class="num-input" onchange="save()"></div>
@@ -146,8 +156,8 @@
 </div>
 
 <nav class="bottom-nav">
-    <button class="nav-item active" onclick="tab('tab-auto', this)"><i class="fas fa-robot"></i><span>Auto</span></button>
-    <button class="nav-item" onclick="tab('tab-man', this)"><i class="fas fa-hand-pointer"></i><span>Manual</span></button>
+    <button class="nav-item active" onclick="tab('tab-auto', this)"><i class="fas fa-th-large"></i><span>อัตโนมัติ</span></button>
+    <button class="nav-item" onclick="tab('tab-man', this)"><i class="fas fa-hand-pointer"></i><span>สั่งการเอง</span></button>
 </nav>
 
 <script>
@@ -210,5 +220,3 @@
 </script>
 </body>
 </html>
-
-
