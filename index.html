@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ระบบถ่ายน้ำทิ้งอัจฉริยะ</title>
+    <title>Smart Fish Farm - Sensor Control</title>
     
-    <link rel="icon" type="image/png" href="fish-icon.png">
-    <link rel="apple-touch-icon" href="fish-icon.png">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -21,118 +21,135 @@
             --bg: #f0f9ff; 
             --red: #f44336; 
             --green: #4caf50; 
+            --border: #e2e8f0;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Kanit', sans-serif; margin: 0; background: var(--bg); padding-bottom: 80px; }
+        body { font-family: 'Kanit', sans-serif; margin: 0; background: var(--bg); padding-bottom: 90px; color: #1e293b; }
         
-        header { background: var(--primary); color: white; padding: 15px 20px; border-radius: 0 0 25px 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        header { background: var(--primary); color: white; padding: 15px 20px; border-radius: 0 0 25px 25px; box-shadow: 0 4px 12px rgba(2, 119, 189, 0.2); }
         header h3 { margin: 0; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
 
         .container { max-width: 600px; margin: 0 auto; padding: 10px; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Sensor Grid */
+        /* Sensor Dashboard */
         .sensor-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 15px; }
-        .sensor-card { background: white; padding: 8px 4px; border-radius: 12px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
-        .sensor-card i { font-size: 0.9rem; margin-bottom: 2px; }
-        .sensor-card .val { font-size: 0.85rem; font-weight: 600; display: block; }
-        .sensor-card small { color: #64748b; font-size: 0.65rem; display: block; }
+        .sensor-card { background: white; padding: 10px 4px; border-radius: 15px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.03); border: 1px solid #fff; }
+        .sensor-card i { font-size: 1rem; margin-bottom: 4px; }
+        .sensor-card .val { font-size: 0.9rem; font-weight: 600; display: block; color: #0f172a; }
+        .sensor-card small { color: #64748b; font-size: 0.65rem; display: block; margin-top: 2px; }
 
-        .panel { background: white; border-radius: 20px; padding: 15px; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid var(--primary); }
-        .row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+        .panel { background: white; border-radius: 20px; padding: 18px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border-left: 6px solid var(--primary); }
+        .panel-secondary { border-left-color: var(--secondary); }
+        
+        .panel-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-weight: 500; font-size: 0.95rem; }
+        .row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+        .row:last-child { border: none; }
 
-        /* Input Controls */
-        .input-group { display: flex; align-items: center; background: #f8fafc; padding: 6px 10px; border-radius: 10px; border: 1px solid #e2e8f0; }
-        input[type="time"] { border: none; background: transparent; font-family: 'Kanit'; font-size: 0.85rem; outline: none; width: 85px; color: #1e293b; position: relative; }
+        /* Input Styles */
+        .input-group { display: flex; align-items: center; background: #f8fafc; padding: 8px 12px; border-radius: 12px; border: 1px solid var(--border); }
+        
+        .threshold-input { border: none; background: transparent; font-family: 'Kanit'; font-size: 1.1rem; color: var(--primary); width: 60px; text-align: right; outline: none; font-weight: 500; }
+        .unit { margin-left: 6px; color: #94a3b8; font-size: 0.8rem; font-weight: 400; }
+
+        input[type="time"] { border: none; background: transparent; font-family: 'Kanit'; font-size: 0.9rem; outline: none; width: 85px; color: #1e293b; position: relative; }
         input[type="time"]:not(:valid)::before { content: "hh:mm"; color: #cbd5e1; font-weight: 300; position: absolute; left: 0; }
 
-        .dur-input { border: none; background: transparent; font-family: 'Kanit'; font-size: 0.9rem; color: var(--primary); width: 65px; text-align: center; outline: none; }
-        .dur-input::placeholder { color: #cbd5e1; font-weight: 300; }
+        .dur-input { border: none; background: transparent; font-family: 'Kanit'; font-size: 0.95rem; color: var(--secondary); width: 65px; text-align: center; outline: none; }
+        .dur-input::placeholder { color: #cbd5e1; }
 
-        .divider { margin: 0 6px; color: #cbd5e1; font-weight: 200; }
-
-        /* Status & Buttons */
-        .status-light { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; }
-        .light-off { background-color: var(--red); box-shadow: 0 0 8px var(--red); }
-        .light-on { background-color: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
-        .btn-manual { width: 100%; padding: 12px; border-radius: 12px; border: none; font-family: 'Kanit'; font-size: 0.95rem; font-weight: 500; cursor: pointer; margin-top: 10px; }
-        .btn-on { background: var(--primary); color: white; }
-        .btn-stop { background: var(--red); color: white; }
-        .btn-feeder { background: var(--secondary); color: white; }
-
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; padding: 10px; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); }
-        .nav-item { flex: 1; border: none; background: none; color: #94a3b8; font-family: 'Kanit'; cursor: pointer; text-align: center; }
-        .nav-item.active { color: var(--primary); font-weight: 600; }
-
-        .switch { position: relative; width: 38px; height: 18px; }
+        /* Controls */
+        .switch { position: relative; width: 42px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; border-radius: 20px; transition: .4s; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 2px; bottom: 2px; background-color: white; border-radius: 50%; transition: .4s; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; border-radius: 34px; transition: .4s; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; border-radius: 50%; transition: .4s; }
         input:checked + .slider { background-color: var(--primary); }
         input:checked + .slider:before { transform: translateX(20px); }
+
+        .status-light { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+        .light-off { background-color: var(--red); box-shadow: 0 0 5px var(--red); }
+        .light-on { background-color: var(--green); box-shadow: 0 0 10px var(--green); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        .btn-manual { width: 100%; padding: 14px; border-radius: 15px; border: none; font-family: 'Kanit'; font-size: 1rem; font-weight: 500; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        .btn-on { background: var(--primary); color: white; }
+        .btn-stop { background: var(--red); color: white; }
+        .btn-secondary { background: var(--secondary); color: white; }
+
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; padding: 12px; box-shadow: 0 -5px 20px rgba(0,0,0,0.06); }
+        .nav-item { flex: 1; border: none; background: none; color: #94a3b8; cursor: pointer; text-align: center; font-family: 'Kanit'; transition: 0.3s; }
+        .nav-item i { font-size: 1.2rem; margin-bottom: 4px; }
+        .nav-item span { font-size: 0.75rem; display: block; }
+        .nav-item.active { color: var(--primary); font-weight: 600; }
+
+        .divider { margin: 0 8px; color: #e2e8f0; font-weight: 200; }
     </style>
 </head>
 <body>
 
 <header>
-    <h3><i class="fas fa-water"></i> Smart Fish Farm</h3>
-    <div style="font-size: 0.7rem; opacity: 0.8;"><i class="fas fa-circle" id="dot"></i> <span id="status-text">Connecting...</span></div>
+    <h3><i class="fas fa-fish"></i> Fish Farm Intelligent</h3>
+    <div style="font-size: 0.75rem; opacity: 0.9; margin-top: 4px;">
+        <i class="fas fa-circle" id="dot" style="color: #64748b;"></i> <span id="status-text">Connecting...</span>
+    </div>
 </header>
 
 <div class="container">
     <div id="tab-auto" class="tab-content active">
         <div class="sensor-grid">
-            <div class="sensor-card"><i class="fas fa-thermometer-half" style="color:#0288d1"></i><span class="val" id="temp-v">--</span><small>Water T</small></div>
-            <div class="sensor-card"><i class="fas fa-vial" style="color:#7b1fa2"></i><span class="val" id="ph-v">--</span><small>pH</small></div>
-            <div class="sensor-card"><i class="fas fa-water" style="color:#00acc1"></i><span class="val" id="lvl-v">--</span><small>Level</small></div>
+            <div class="sensor-card"><i class="fas fa-water" style="color:#0288d1"></i><span class="val" id="lvl-v">--</span><small>Level</small></div>
             <div class="sensor-card"><i class="fas fa-bolt" style="color:#fbc02d"></i><span class="val" id="tds-v">--</span><small>TDS</small></div>
+            <div class="sensor-card"><i class="fas fa-thermometer-half" style="color:#ef4444"></i><span class="val" id="temp-v">--</span><small>Temp</small></div>
+            <div class="sensor-card"><i class="fas fa-vial" style="color:#7b1fa2"></i><span class="val" id="ph-v">--</span><small>pH</small></div>
         </div>
 
         <div class="panel">
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px; color:var(--primary); font-weight:500; font-size:0.9rem;">
-                <span><i class="fas fa-trash-alt"></i> ระบบถ่ายน้ำทิ้ง (Drain)</span>
-                <label class="switch"><input type="checkbox" id="sw-drain" onchange="saveConfig('drain')"><span class="slider"></span></label>
+            <div class="panel-title" style="color: var(--primary);">
+                <span><i class="fas fa-robot"></i> ถ่ายน้ำอัตโนมัติ (Sensor)</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-drain-auto" onchange="saveDrainConfig()">
+                    <span class="slider"></span>
+                </label>
             </div>
             <div class="row">
-                <span style="font-size:0.85rem;">⏰ รอบที่ 1</span>
+                <span style="font-size:0.85rem;">ระบายน้ำเมื่อ <b>Level</b> เกิน</span>
                 <div class="input-group">
-                    <input type="time" id="d-t1" required onchange="saveConfig('drain')">
-                    <span class="divider">|</span>
-                    <input type="text" id="d-d1" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="formatTime(this)" onchange="saveConfig('drain')">
+                    <input type="number" id="limit-lvl" class="threshold-input" placeholder="80" onchange="saveDrainConfig()">
+                    <span class="unit">%</span>
                 </div>
             </div>
-            <div class="row" style="border:none;">
-                <span style="font-size:0.85rem;">⏰ รอบที่ 2</span>
+            <div class="row">
+                <span style="font-size:0.85rem;">ระบายน้ำเมื่อ <b>TDS</b> เกิน</span>
                 <div class="input-group">
-                    <input type="time" id="d-t2" required onchange="saveConfig('drain')">
-                    <span class="divider">|</span>
-                    <input type="text" id="d-d2" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="formatTime(this)" onchange="saveConfig('drain')">
+                    <input type="number" id="limit-tds" class="threshold-input" placeholder="500" onchange="saveDrainConfig()">
+                    <span class="unit">ppm</span>
                 </div>
             </div>
         </div>
 
-        <div class="panel" style="border-left-color: var(--secondary);">
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px; color:var(--secondary); font-weight:500; font-size:0.9rem;">
-                <span><i class="fas fa-utensils"></i> เครื่องให้อาหาร (Feeder)</span>
-                <label class="switch"><input type="checkbox" id="sw-feeder" onchange="saveConfig('feeder')"><span class="slider"></span></label>
+        <div class="panel panel-secondary">
+            <div class="panel-title" style="color: var(--secondary);">
+                <span><i class="fas fa-utensils"></i> ให้อาหารอัตโนมัติ (Time)</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-feeder-auto" onchange="saveFeederConfig()">
+                    <span class="slider"></span>
+                </label>
             </div>
             <div class="row">
-                <span style="font-size:0.85rem;">🥣 เช้า</span>
+                <span style="font-size:0.85rem;">🥣 รอบเช้า</span>
                 <div class="input-group">
-                    <input type="time" id="fd-t1" required onchange="saveConfig('feeder')">
+                    <input type="time" id="fd-t1" required onchange="saveFeederConfig()">
                     <span class="divider">|</span>
-                    <input type="text" id="fd-d1" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="formatTime(this)" onchange="saveConfig('feeder')">
+                    <input type="text" id="fd-d1" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="formatMMSS(this)" onchange="saveFeederConfig()">
                 </div>
             </div>
-            <div class="row" style="border:none;">
-                <span style="font-size:0.85rem;">🥣 เย็น</span>
+            <div class="row">
+                <span style="font-size:0.85rem;">🥣 รอบเย็น</span>
                 <div class="input-group">
-                    <input type="time" id="fd-t2" required onchange="saveConfig('feeder')">
+                    <input type="time" id="fd-t2" required onchange="saveFeederConfig()">
                     <span class="divider">|</span>
-                    <input type="text" id="fd-d2" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="formatTime(this)" onchange="saveConfig('feeder')">
+                    <input type="text" id="fd-d2" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="formatMMSS(this)" onchange="saveFeederConfig()">
                 </div>
             </div>
         </div>
@@ -140,46 +157,46 @@
 
     <div id="tab-manual" class="tab-content">
         <div class="panel">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <span style="font-weight:500; font-size:0.95rem;"><i class="fas fa-faucet"></i> สั่งถ่ายน้ำทิ้งทันที</span>
+            <div class="panel-title">
+                <span><i class="fas fa-hand-holding-water"></i> สั่งถ่ายน้ำทิ้งทันที</span>
                 <div id="light-drain" class="status-light light-off"></div>
             </div>
-            <div class="row" style="border:none;">
-                <span style="font-size:0.85rem;">ระบุเวลาเปิดวาล์ว</span>
-                <div class="input-group">
-                    <input type="text" id="man-dur-drain" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="formatTime(this)" style="width:100px; font-size:1.1rem;">
-                </div>
-            </div>
-            <button id="btn-drain" class="btn-manual btn-on" onclick="manualControl('drain')"><i class="fas fa-hand-holding-water"></i> เปิดวาล์วระบายน้ำ</button>
+            <button id="btn-drain" class="btn-manual btn-on" onclick="manualControl('drain')">เปิดวาล์วถ่ายน้ำ</button>
         </div>
 
-        <div class="panel" style="border-left-color: var(--secondary);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <span style="font-weight:500; font-size:0.95rem;"><i class="fas fa-cookie"></i> สั่งให้อาหารทันที</span>
+        <div class="panel panel-secondary">
+            <div class="panel-title">
+                <span><i class="fas fa-cookie"></i> สั่งให้อาหารทันที</span>
                 <div id="light-feeder" class="status-light light-off"></div>
             </div>
-            <div class="row" style="border:none;">
-                <span style="font-size:0.85rem;">ระยะเวลาหมุน</span>
+            <div class="row" style="margin-bottom: 10px; border:none;">
+                <span style="font-size:0.85rem;">ความนานในการหมุน</span>
                 <div class="input-group">
-                    <input type="text" id="man-dur-feeder" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="formatTime(this)" style="width:100px; font-size:1.1rem;">
+                    <input type="text" id="man-dur-feeder" class="dur-input" placeholder="mm:ss" inputmode="tel" oninput="formatMMSS(this)" style="width:100px; font-size:1.1rem; color: var(--secondary);">
                 </div>
             </div>
-            <button id="btn-feeder" class="btn-manual btn-feeder" onclick="manualControl('feeder')"><i class="fas fa-utensils"></i> ปล่อยอาหาร</button>
+            <button id="btn-feeder" class="btn-manual btn-secondary" onclick="manualControl('feeder')">เริ่มให้อาหาร</button>
         </div>
     </div>
 </div>
 
 <nav class="bottom-nav">
-    <button class="nav-item active" onclick="switchTab('tab-auto', this)"><i class="fas fa-clock"></i><br>Auto</button>
-    <button class="nav-item" onclick="switchTab('tab-manual', this)"><i class="fas fa-hand-pointer"></i><br>Manual</button>
+    <button class="nav-item active" onclick="switchTab('tab-auto', this)">
+        <i class="fas fa-robot"></i><span>Auto</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('tab-manual', this)">
+        <i class="fas fa-hand-pointer"></i><span>Manual</span>
+    </button>
 </nav>
 
 <script>
+    // --- เปลี่ยน URL ตรงนี้เป็นของโปรเจกต์คุณ ---
     const firebaseConfig = { databaseURL: "https://smart-fish-farm-default-rtdb.firebaseio.com" }; 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    function formatTime(input) {
+    // ฟังก์ชันจัดรูปแบบ mm:ss
+    function formatMMSS(input) {
         let val = input.value.replace(/\D/g, '');
         if (val.length > 4) val = val.slice(0, 4);
         if (val.length >= 3) {
@@ -189,13 +206,17 @@
         }
     }
 
-    function secondsToMMSS(s) {
-        if (!s) return "";
-        return (Math.floor(s/60)).toString().padStart(2,'0') + ":" + (s%60).toString().padStart(2,'0');
+    // แปลงวินาทีเป็น mm:ss
+    function toMMSS(sec) {
+        if (!sec) return "";
+        let m = Math.floor(sec / 60).toString().padStart(2, '0');
+        let s = (sec % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
     }
 
-    function timeToSeconds(str) {
-        if(!str || !str.includes(':')) return 0;
+    // แปลง mm:ss เป็นวินาที
+    function toSec(str) {
+        if (!str || !str.includes(':')) return 0;
         const p = str.split(':');
         return (parseInt(p[0]) || 0) * 60 + (parseInt(p[1]) || 0);
     }
@@ -207,50 +228,50 @@
         btn.classList.add('active');
     }
 
+    // --- รับข้อมูลจาก Firebase ---
     db.ref().on("value", (snapshot) => {
         const data = snapshot.val();
         if(!data) return;
 
+        // อัปเดตเซ็นเซอร์
         if(data.sensor) {
-            document.getElementById('temp-v').innerText = data.sensor.temp + "°";
-            document.getElementById('ph-v').innerText = data.sensor.ph;
             document.getElementById('lvl-v').innerText = data.sensor.level + "%";
             document.getElementById('tds-v').innerText = data.sensor.tds;
+            document.getElementById('temp-v').innerText = data.sensor.temp.toFixed(1) + "°";
+            document.getElementById('ph-v').innerText = data.sensor.ph;
             document.getElementById('dot').style.color = "#4caf50";
             document.getElementById('status-text').innerText = "Online";
         }
 
+        // อัปเดตสถานะปุ่ม Manual
         if(data.control) {
-            updateUI('drain', data.control.drain.run);
-            updateUI('feeder', data.control.feeder.run);
+            updateMotorUI('drain', data.control.drain.run);
+            updateMotorUI('feeder', data.control.feeder.run);
         }
 
-        if(data.auto) {
-            const d = data.auto.drain;
-            const fd = data.auto.feeder;
-            if(d) {
-                if(document.activeElement.id !== 'd-t1') document.getElementById('d-t1').value = d.time1 || "";
-                if(document.activeElement.id !== 'd-t2') document.getElementById('d-t2').value = d.time2 || "";
-                if(document.activeElement.id !== 'd-d1') document.getElementById('d-d1').value = secondsToMMSS(d.dur1);
-                if(document.activeElement.id !== 'd-d2') document.getElementById('d-d2').value = secondsToMMSS(d.dur2);
-                document.getElementById('sw-drain').checked = d.enabled;
+        // ดึงค่า Config เดิมมาโชว์ (ป้องกันการรีเซ็ต)
+        if(document.activeElement.tagName !== 'INPUT') {
+            if(data.auto_drain) {
+                document.getElementById('sw-drain-auto').checked = data.auto_drain.enabled;
+                document.getElementById('limit-lvl').value = data.auto_drain.limit_lvl;
+                document.getElementById('limit-tds').value = data.auto_drain.limit_tds;
             }
-            if(fd) {
-                if(document.activeElement.id !== 'fd-t1') document.getElementById('fd-t1').value = fd.time1 || "";
-                if(document.activeElement.id !== 'fd-t2') document.getElementById('fd-t2').value = fd.time2 || "";
-                if(document.activeElement.id !== 'fd-d1') document.getElementById('fd-d1').value = secondsToMMSS(fd.dur1);
-                if(document.activeElement.id !== 'fd-d2') document.getElementById('fd-d2').value = secondsToMMSS(fd.dur2);
-                document.getElementById('sw-feeder').checked = fd.enabled;
+            if(data.auto_feeder) {
+                document.getElementById('sw-feeder-auto').checked = data.auto_feeder.enabled;
+                document.getElementById('fd-t1').value = data.auto_feeder.time1 || "";
+                document.getElementById('fd-t2').value = data.auto_feeder.time2 || "";
+                document.getElementById('fd-d1').value = toMMSS(data.auto_feeder.dur1);
+                document.getElementById('fd-d2').value = toMMSS(data.auto_feeder.dur2);
             }
         }
     });
 
-    function updateUI(id, run) {
+    function updateMotorUI(id, run) {
         const btn = document.getElementById(`btn-${id}`);
         const light = document.getElementById(`light-${id}`);
         if(btn && light) {
-            btn.innerHTML = run ? '<i class="fas fa-stop"></i> STOP' : (id === 'drain' ? '<i class="fas fa-hand-holding-water"></i> เปิดวาล์วระบายน้ำ' : '<i class="fas fa-utensils"></i> ปล่อยอาหาร');
-            btn.className = run ? "btn-manual btn-stop" : (id === 'drain' ? "btn-manual btn-on" : "btn-manual btn-feeder");
+            btn.innerHTML = run ? '<i class="fas fa-stop"></i> หยุดทำงาน' : (id==='drain' ? 'เปิดวาล์วถ่ายน้ำ' : 'เริ่มให้อาหาร');
+            btn.className = run ? "btn-manual btn-stop" : (id==='drain' ? "btn-manual btn-on" : "btn-manual btn-secondary");
             light.className = run ? "status-light light-on" : "status-light light-off";
         }
     }
@@ -260,19 +281,26 @@
         if(isRunning) {
             db.ref(`control/${id}`).update({ run: false });
         } else {
-            const dur = timeToSeconds(document.getElementById(`man-dur-${id}`)?.value || "01:00");
+            const dur = toSec(document.getElementById(`man-dur-${id}`)?.value || "00:10");
             db.ref(`control/${id}`).set({ run: true, duration: dur });
         }
     }
 
-    function saveConfig(id) {
-        const prefix = id === 'drain' ? 'd' : 'fd';
-        db.ref(`auto/${id}`).set({
-            enabled: document.getElementById(`sw-${id}`).checked,
-            time1: document.getElementById(`${prefix}-t1`).value,
-            dur1: timeToSeconds(document.getElementById(`${prefix}-d1`).value),
-            time2: document.getElementById(`${prefix}-t2`).value,
-            dur2: timeToSeconds(document.getElementById(`${prefix}-d2`).value)
+    function saveDrainConfig() {
+        db.ref(`auto_drain`).set({
+            enabled: document.getElementById('sw-drain-auto').checked,
+            limit_lvl: parseInt(document.getElementById('limit-lvl').value) || 80,
+            limit_tds: parseInt(document.getElementById('limit-tds').value) || 500
+        });
+    }
+
+    function saveFeederConfig() {
+        db.ref(`auto_feeder`).set({
+            enabled: document.getElementById('sw-feeder-auto').checked,
+            time1: document.getElementById('fd-t1').value,
+            dur1: toSec(document.getElementById('fd-d1').value),
+            time2: document.getElementById('fd-t2').value,
+            dur2: toSec(document.getElementById('fd-d2').value)
         });
     }
 </script>
