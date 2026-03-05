@@ -21,25 +21,20 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Kanit', sans-serif; margin: 0; background: var(--bg); padding-bottom: 100px; color: var(--dark); }
         
-        /* Header & Logo */
-        header { background: var(--primary); color: white; padding: 15px 20px; border-radius: 0 0 30px 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
-        .header-flex { display: flex; align-items: center; gap: 12px; }
-        .header-flex img { height: 48px; width: 48px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.5); background: white; object-fit: cover; }
-        .header-text h3 { margin: 0; font-size: 1.1rem; letter-spacing: 0.5px; }
+        header { background: var(--primary); color: white; padding: 20px; border-radius: 0 0 30px 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+        header h3 { margin: 0; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
         .status-info { font-size: 0.75rem; opacity: 0.8; margin-top: 5px; display: flex; align-items: center; gap: 6px; }
 
         .container { max-width: 600px; margin: 0 auto; padding: 15px; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Dashboard Cards */
         .sensor-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
-        .sensor-card { background: white; padding: 15px 5px; border-radius: 20px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid rgba(255,255,255,0.8); }
+        .sensor-card { background: white; padding: 15px 5px; border-radius: 20px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
         .sensor-card i { font-size: 1.2rem; margin-bottom: 6px; display: block; }
         .sensor-card .val { font-size: 1rem; font-weight: 600; color: var(--dark); }
-        .sensor-card small { color: #64748b; font-size: 0.65rem; display: block; margin-top: 2px; }
+        .sensor-card small { color: #64748b; font-size: 0.65rem; display: block; }
 
-        /* Panels */
         .panel { background: white; border-radius: 24px; padding: 20px; margin-bottom: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.03); border-left: 6px solid var(--primary); }
         .panel-secondary { border-left-color: var(--secondary); }
         .panel-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; font-weight: 500; font-size: 1rem; color: var(--primary); }
@@ -47,13 +42,11 @@
         .row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
         .row:last-child { border: none; }
 
-        /* Input Styles */
         .input-group { display: flex; align-items: center; background: #f8fafc; padding: 6px 12px; border-radius: 14px; border: 1px solid #e2e8f0; }
         .num-input { border: none; background: transparent; font-family: 'Kanit'; font-size: 1rem; color: var(--primary); width: 45px; text-align: right; outline: none; font-weight: 500; }
         .time-input { border: none; background: transparent; font-family: 'Kanit'; font-size: 0.9rem; outline: none; width: 85px; }
         .dur-input { border: none; background: transparent; font-family: 'Kanit'; font-size: 0.95rem; color: var(--red); width: 55px; text-align: center; outline: none; font-weight: 500; }
 
-        /* Switch */
         .switch { position: relative; width: 44px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; border-radius: 34px; transition: .4s; }
@@ -61,7 +54,6 @@
         input:checked + .slider { background-color: var(--primary); }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* Lights & Buttons */
         .status-light { width: 12px; height: 12px; border-radius: 50%; background: #e2e8f0; }
         .light-on { background: var(--green); box-shadow: 0 0 10px var(--green); animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
@@ -71,7 +63,6 @@
         .btn-cyan { background: var(--secondary); color: white; }
         .btn-stop { background: var(--red); color: white; }
 
-        /* Navigation */
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; padding: 12px; box-shadow: 0 -5px 25px rgba(0,0,0,0.06); z-index: 1000; }
         .nav-item { flex: 1; border: none; background: none; color: #94a3b8; cursor: pointer; text-align: center; font-family: 'Kanit'; transition: 0.3s; }
         .nav-item i { font-size: 1.4rem; margin-bottom: 4px; display: block; }
@@ -82,15 +73,10 @@
 <body>
 
 <header>
-    <div class="header-flex">
-        <img src="logo.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2970/2970104.png'" alt="Logo">
-        <div class="header-text">
-            <h3>Smart Fish Farm Control</h3>
-            <div class="status-info">
-                <i class="fas fa-circle" id="dot" style="color: #cbd5e1;"></i> 
-                <span id="status-text">กำลังเชื่อมต่อระบบ...</span>
-            </div>
-        </div>
+    <h3><i class="fas fa-fish"></i> Smart Fish Farm Master</h3>
+    <div class="status-info">
+        <i class="fas fa-circle" id="dot" style="color: #cbd5e1;"></i> 
+        <span id="status-text">Connecting...</span>
     </div>
 </header>
 
@@ -98,17 +84,16 @@
     <div id="tab-auto" class="tab-content active">
         <div class="sensor-grid">
             <div class="sensor-card"><i class="fas fa-water" style="color:#0288d1"></i><span class="val" id="lvl-v">--</span><small>ระดับน้ำ</small></div>
-            <div class="sensor-card"><i class="fas fa-bolt" style="color:#fbc02d"></i><span class="val" id="tds-v">--</span><small>TDS (ใส)</small></div>
+            <div class="sensor-card"><i class="fas fa-bolt" style="color:#fbc02d"></i><span class="val" id="tds-v">--</span><small>TDS</small></div>
             <div class="sensor-card"><i class="fas fa-temperature-high" style="color:#f44336"></i><span class="val" id="temp-v">--</span><small>อุณหภูมิ</small></div>
             <div class="sensor-card"><i class="fas fa-flask" style="color:#9c27b0"></i><span class="val" id="ph-v">--</span><small>ค่า pH</small></div>
         </div>
 
         <div class="panel">
-            <div class="panel-header"><i class="fas fa-robot"></i> ระบบระบายน้ำอัตโนมัติ</div>
-            
+            <div class="panel-header"><i class="fas fa-robot"></i> ระบบถ่ายน้ำอัตโนมัติ</div>
             <div class="row">
                 <div style="flex:1;">
-                    <span style="font-size:0.9rem;"><i class="fas fa-vial"></i> เมื่อ TDS สูงกว่า ></span>
+                    <span style="font-size:0.9rem;"><i class="fas fa-vial"></i> TDS ></span>
                     <div style="font-size:0.65rem; color:#94a3b8;">เปิดวาล์วนาน (นาที:วินาที)</div>
                 </div>
                 <div style="display:flex; align-items:center; gap:6px;">
@@ -117,10 +102,9 @@
                     <label class="switch"><input type="checkbox" id="e-tds" onchange="save()"><span class="slider"></span></label>
                 </div>
             </div>
-            
             <div class="row">
                 <div style="flex:1;">
-                    <span style="font-size:0.9rem;"><i class="fas fa-skull-crossbones"></i> เมื่อ pH ต่ำกว่า <</span>
+                    <span style="font-size:0.9rem;"><i class="fas fa-skull-crossbones"></i> pH <</span>
                     <div style="font-size:0.65rem; color:#94a3b8;">เปิดวาล์วนาน (นาที:วินาที)</div>
                 </div>
                 <div style="display:flex; align-items:center; gap:6px;">
@@ -161,7 +145,7 @@
         
         <div class="panel panel-secondary">
             <div class="panel-header"><span><i class="fas fa-cookie-bite"></i> สั่งให้อาหารทันที</span><div id="l-feeder" class="status-light" style="margin-left: auto;"></div></div>
-            <div class="row" style="border:none;"><span style="font-size:0.85rem;">ระบุเวลาทำงาน (นาที:วินาที)</span><div class="input-group"><input type="text" id="m-dur-f" class="dur-input" style="color:var(--secondary)" placeholder="00:05" oninput="fmtSS(this)"></div></div>
+            <div class="row" style="border:none;"><span style="font-size:0.85rem;">ระบุเวลา (นาที:วินาที)</span><div class="input-group"><input type="text" id="m-dur-f" class="dur-input" style="color:var(--secondary)" placeholder="00:05" oninput="fmtSS(this)"></div></div>
             <button id="b-feeder" class="btn btn-cyan" onclick="ctrl('feeder')"><i class="fas fa-utensils"></i> เริ่มให้อาหาร</button>
         </div>
     </div>
@@ -173,35 +157,28 @@
 </nav>
 
 <script>
-    // --- ตั้งค่า Firebase (กรุณาเปลี่ยนเป็นของคุณเอง) ---
     const firebaseConfig = { databaseURL: "https://smart-fish-farm-default-rtdb.firebaseio.com" }; 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // ฟังก์ชันช่วยจัดการเวลาและ UI
     function fmtSS(i){ let v=i.value.replace(/\D/g,''); if(v.length>4)v=v.slice(0,4); i.value=v.length>=3?v.slice(0,2)+':'+v.slice(2):v; }
     function toS(s){ if(!s||!s.includes(':'))return 5; const p=s.split(':'); return (parseInt(p[0])||0)*60+(parseInt(p[1])||0); }
     function toM(s){ if(!s)return "00:00"; return (Math.floor(s/60)).toString().padStart(2,'0')+":"+(s%60).toString().padStart(2,'0'); }
     function tab(id, b){ document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); document.getElementById(id).classList.add('active'); b.classList.add('active'); }
 
-    // ดึงข้อมูล Real-time
     db.ref().on("value", (snap) => {
         const d = snap.val(); if(!d) return;
-        
-        // อัปเดตเซ็นเซอร์
         if(d.sensor){
             document.getElementById('lvl-v').innerText = d.sensor.level + "%";
             document.getElementById('tds-v').innerText = d.sensor.tds;
             document.getElementById('temp-v').innerText = d.sensor.temp.toFixed(1) + "°";
             document.getElementById('ph-v').innerText = d.sensor.ph.toFixed(1);
-            document.getElementById('dot').style.color = "#4caf50"; document.getElementById('status-text').innerText = "ระบบออนไลน์";
+            document.getElementById('dot').style.color = "#4caf50"; document.getElementById('status-text').innerText = "Online";
         }
-
-        // อัปเดตสถานะปุ่ม Manual
         if(d.control) {
             const rd = d.control.drain.run;
             document.getElementById('b-drain').className = rd ? "btn btn-stop" : "btn btn-blue";
-            document.getElementById('b-drain').innerHTML = rd ? '<i class="fas fa-stop"></i> หยุดระบายน้ำ' : '<i class="fas fa-play"></i> เปิดวาล์วน้ำ';
+            document.getElementById('b-drain').innerHTML = rd ? '<i class="fas fa-stop"></i> หยุดระบาย' : '<i class="fas fa-play"></i> เปิดวาล์วน้ำ';
             document.getElementById('l-drain').className = rd ? "status-light light-on" : "status-light";
 
             const rf = d.control.feeder.run;
@@ -209,49 +186,28 @@
             document.getElementById('b-feeder').innerHTML = rf ? '<i class="fas fa-stop"></i> หยุดทำงาน' : '<i class="fas fa-utensils"></i> เริ่มให้อาหาร';
             document.getElementById('l-feeder').className = rf ? "status-light light-on" : "status-light";
         }
-
-        // อัปเดตค่า Config (โหลดเข้า Input เฉพาะตอนไม่ได้พิมพ์)
         if(d.config && document.activeElement.tagName !== 'INPUT') {
             const c = d.config;
-            document.getElementById('e-tds').checked = c.tds_en; 
-            document.getElementById('l-tds').value = c.tds_l;
-            document.getElementById('d-tds').value = toM(c.tds_d);
-
-            document.getElementById('e-ph').checked = c.ph_en; 
-            document.getElementById('l-ph').value = c.ph_l;
-            document.getElementById('d-ph').value = toM(c.ph_d);
-
+            document.getElementById('e-tds').checked = c.tds_en; document.getElementById('l-tds').value = c.tds_l; document.getElementById('d-tds').value = toM(c.tds_d);
+            document.getElementById('e-ph').checked = c.ph_en; document.getElementById('l-ph').value = c.ph_l; document.getElementById('d-ph').value = toM(c.ph_d);
             document.getElementById('e-f').checked = c.f_en; 
-            document.getElementById('f-t1').value = c.f_t1; 
-            document.getElementById('f-d1').value = toM(c.f_d1);
-            document.getElementById('f-t2').value = c.f_t2; 
-            document.getElementById('f-d2').value = toM(c.f_d2);
+            document.getElementById('f-t1').value = c.f_t1; document.getElementById('f-d1').value = toM(c.f_d1);
+            document.getElementById('f-t2').value = c.f_t2; document.getElementById('f-d2').value = toM(c.f_d2);
         }
     });
 
-    // สั่งงาน Manual
     function ctrl(id){ 
         const isR = document.getElementById(`b-${id}`).classList.contains('btn-stop'); 
         const dur = (id === 'feeder') ? toS(document.getElementById('m-dur-f').value) : 0;
         db.ref(`control/${id}`).update({run: !isR, duration: dur}); 
     }
     
-    // บันทึกการตั้งค่า Auto
     function save(){
         db.ref('config').set({
-            tds_en: document.getElementById('e-tds').checked, 
-            tds_l: parseInt(document.getElementById('l-tds').value) || 0, 
-            tds_d: toS(document.getElementById('d-tds').value),
-            
-            ph_en: document.getElementById('e-ph').checked, 
-            ph_l: parseFloat(document.getElementById('l-ph').value) || 0, 
-            ph_d: toS(document.getElementById('d-ph').value),
-            
-            f_en: document.getElementById('e-f').checked, 
-            f_t1: document.getElementById('f-t1').value, 
-            f_d1: toS(document.getElementById('f-d1').value),
-            f_t2: document.getElementById('f-t2').value, 
-            f_d2: toS(document.getElementById('f-d2').value)
+            tds_en: document.getElementById('e-tds').checked, tds_l: parseInt(document.getElementById('l-tds').value) || 0, tds_d: toS(document.getElementById('d-tds').value),
+            ph_en: document.getElementById('e-ph').checked, ph_l: parseFloat(document.getElementById('l-ph').value) || 0, ph_d: toS(document.getElementById('d-ph').value),
+            f_en: document.getElementById('e-f').checked, f_t1: document.getElementById('f-t1').value, f_d1: toS(document.getElementById('f-d1').value),
+            f_t2: document.getElementById('f-t2').value, f_d2: toS(document.getElementById('f-d2').value)
         });
     }
 </script>
