@@ -30,10 +30,20 @@
         .sensor-card .val { font-size: 0.95rem; font-weight: 600; }
         .sensor-card small { color: #64748b; font-size: 0.65rem; display: block; }
 
-        /* Panel UI */
+        /* Panel UI - แก้ไขจุดที่ตัวหนังสือชิดขวา */
         .panel { background: white; border-radius: 22px; padding: 18px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.04); border-left: 6px solid var(--primary); }
         .panel-secondary { border-left-color: var(--secondary); }
-        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-weight: 500; }
+        
+        /* แก้ไขตรงนี้: เปลี่ยนจาก space-between เป็น flex-start */
+        .panel-header { 
+            display: flex; 
+            justify-content: flex-start; 
+            align-items: center; 
+            gap: 10px; 
+            margin-bottom: 15px; 
+            font-weight: 500; 
+            font-size: 1rem;
+        }
         
         .row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
         .row:last-child { border: none; }
@@ -112,7 +122,10 @@
         </div>
 
         <div class="panel panel-secondary">
-            <div class="panel-header" style="color: var(--secondary);"><span><i class="fas fa-clock"></i> ให้อาหารอัตโนมัติ</span><label class="switch"><input type="checkbox" id="e-f" onchange="save()"><span class="slider"></span></label></div>
+            <div class="panel-header" style="color: var(--secondary); display: flex; justify-content: space-between; width: 100%;">
+                <span><i class="fas fa-clock"></i> ให้อาหารอัตโนมัติ</span>
+                <label class="switch"><input type="checkbox" id="e-f" onchange="save()"><span class="slider"></span></label>
+            </div>
             <div class="row">
                 <span><i class="fas fa-sun"></i> รอบเช้า</span>
                 <div class="input-group">
@@ -132,11 +145,11 @@
 
     <div id="tab-man" class="tab-content">
         <div class="panel">
-            <div class="panel-header"><span><i class="fas fa-faucet"></i> สั่งระบายน้ำทิ้ง</span><div id="l-drain" class="status-light"></div></div>
+            <div class="panel-header"><span><i class="fas fa-faucet"></i> สั่งระบายน้ำทิ้ง</span><div id="l-drain" class="status-light" style="margin-left: auto;"></div></div>
             <button id="b-drain" class="btn btn-blue" onclick="ctrl('drain')"><i class="fas fa-play"></i> เปิดวาล์วระบายน้ำ</button>
         </div>
         <div class="panel panel-secondary">
-            <div class="panel-header"><span><i class="fas fa-cookie-bite"></i> สั่งให้อาหารทันที</span><div id="l-feeder" class="status-light"></div></div>
+            <div class="panel-header"><span><i class="fas fa-cookie-bite"></i> สั่งให้อาหารทันที</span><div id="l-feeder" class="status-light" style="margin-left: auto;"></div></div>
             <div class="row" style="border:none;"><span style="font-size:0.85rem;">ระบุเวลา (วินาที)</span><div class="input-group"><input type="text" id="m-dur-f" class="dur-input" placeholder="00:05" oninput="fmtSS(this)"></div></div>
             <button id="b-feeder" class="btn btn-cyan" onclick="ctrl('feeder')"><i class="fas fa-utensils"></i> ให้อาหารตอนนี้</button>
         </div>
@@ -190,7 +203,12 @@
         l.className = r ? "status-light light-on" : "status-light";
     }
 
-    function ctrl(id){ const isR = document.getElementById(`b-${id}`).classList.contains('btn-stop'); const dur = toS(document.getElementById('m-dur-f')?.value || "00:05"); db.ref(`control/${id}`).update({run:!isR, duration: dur}); }
+    function ctrl(id){ 
+        const isR = document.getElementById(`b-${id}`).classList.contains('btn-stop'); 
+        const durInput = document.getElementById('m-dur-f')?.value;
+        const dur = (id === 'feeder') ? toS(durInput || "00:05") : 0;
+        db.ref(`control/${id}`).update({run:!isR, duration: dur}); 
+    }
     
     function save(){
         db.ref('config').set({
