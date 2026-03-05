@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fish Farm Ultimate Control</title>
+    <title>Fish Farm Master Control</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -11,47 +11,39 @@
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap');
-        :root { 
-            --primary: #0277bd; 
-            --secondary: #00acc1; 
-            --bg: #f0f9ff; 
-            --red: #f44336; 
-            --green: #4caf50; 
-            --dark: #1e293b;
-        }
+        :root { --primary: #0277bd; --secondary: #00acc1; --bg: #f0f9ff; --red: #f44336; --green: #4caf50; --purple: #9c27b0; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Kanit', sans-serif; margin: 0; background: var(--bg); padding-bottom: 100px; color: var(--dark); }
+        body { font-family: 'Kanit', sans-serif; margin: 0; background: var(--bg); padding-bottom: 100px; color: #1e293b; }
         
-        header { background: var(--primary); color: white; padding: 20px; border-radius: 0 0 30px 30px; box-shadow: 0 4px 15px rgba(2, 119, 189, 0.3); }
+        header { background: var(--primary); color: white; padding: 20px; border-radius: 0 0 30px 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
         header h3 { margin: 0; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
-        .status-bar { font-size: 0.75rem; opacity: 0.9; margin-top: 5px; display: flex; align-items: center; gap: 5px; }
+        .status-info { font-size: 0.75rem; opacity: 0.9; margin-top: 5px; display: flex; align-items: center; gap: 5px; }
 
         .container { max-width: 600px; margin: 0 auto; padding: 15px; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Dashboard Sensors */
+        /* Dashboard */
         .sensor-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
-        .sensor-card { background: white; padding: 12px 5px; border-radius: 18px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid rgba(255,255,255,0.8); }
+        .sensor-card { background: white; padding: 12px 5px; border-radius: 18px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .sensor-card i { font-size: 1.1rem; margin-bottom: 5px; display: block; }
-        .sensor-card .val { font-size: 0.95rem; font-weight: 600; color: var(--dark); }
-        .sensor-card small { color: #64748b; font-size: 0.65rem; display: block; margin-top: 2px; }
+        .sensor-card .val { font-size: 0.95rem; font-weight: 600; }
+        .sensor-card small { color: #64748b; font-size: 0.65rem; display: block; }
 
-        /* Panel & UI Elements */
+        /* Panel UI */
         .panel { background: white; border-radius: 22px; padding: 18px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.04); border-left: 6px solid var(--primary); }
         .panel-secondary { border-left-color: var(--secondary); }
         .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-weight: 500; }
         
-        .row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+        .row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
         .row:last-child { border: none; }
 
-        .input-group { display: flex; align-items: center; background: #f8fafc; padding: 8px 12px; border-radius: 12px; border: 1px solid #e2e8f0; }
+        .input-group { display: flex; align-items: center; background: #f8fafc; padding: 6px 12px; border-radius: 12px; border: 1px solid #e2e8f0; }
         .num-input { border: none; background: transparent; font-family: 'Kanit'; font-size: 1rem; color: var(--primary); width: 55px; text-align: right; outline: none; font-weight: 500; }
-        .time-input { border: none; background: transparent; font-family: 'Kanit'; font-size: 0.9rem; outline: none; width: 85px; color: var(--dark); }
-        .dur-input { border: none; background: transparent; font-family: 'Kanit'; font-size: 0.95rem; color: var(--secondary); width: 65px; text-align: center; outline: none; }
-        .unit { margin-left: 5px; color: #94a3b8; font-size: 0.8rem; }
+        .time-input { border: none; background: transparent; font-family: 'Kanit'; font-size: 0.9rem; outline: none; width: 85px; }
+        .dur-input { border: none; background: transparent; font-family: 'Kanit'; font-size: 0.95rem; color: var(--secondary); width: 60px; text-align: center; outline: none; }
 
-        /* Custom Switch */
+        /* Switch */
         .switch { position: relative; width: 42px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; border-radius: 34px; transition: .4s; }
@@ -59,213 +51,155 @@
         input:checked + .slider { background-color: var(--primary); }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* Status Light */
-        .status-light { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-        .light-off { background: #e2e8f0; }
+        /* Status & Buttons */
+        .status-light { width: 12px; height: 12px; border-radius: 50%; display: inline-block; background: #e2e8f0; }
         .light-on { background: var(--green); box-shadow: 0 0 10px var(--green); animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
-        /* Buttons */
         .btn { width: 100%; padding: 15px; border-radius: 16px; border: none; font-family: 'Kanit'; font-size: 1rem; font-weight: 500; cursor: pointer; transition: 0.3s; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .btn-blue { background: var(--primary); color: white; }
         .btn-cyan { background: var(--secondary); color: white; }
         .btn-stop { background: var(--red); color: white; }
 
-        /* Navigation */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; padding: 15px; box-shadow: 0 -5px 20px rgba(0,0,0,0.06); }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; padding: 15px; box-shadow: 0 -5px 20px rgba(0,0,0,0.06); z-index: 100; }
         .nav-item { flex: 1; border: none; background: none; color: #94a3b8; cursor: pointer; text-align: center; font-family: 'Kanit'; }
         .nav-item i { font-size: 1.3rem; margin-bottom: 4px; display: block; }
-        .nav-item span { font-size: 0.75rem; }
         .nav-item.active { color: var(--primary); font-weight: 600; }
     </style>
 </head>
 <body>
 
 <header>
-    <h3><i class="fas fa-fish-icons"></i> Smart Fish Hybrid Pro</h3>
-    <div class="status-bar">
-        <i class="fas fa-circle" id="dot" style="font-size: 0.6rem; color: #cbd5e1;"></i> 
-        <span id="status-text">กำลังเชื่อมต่อ...</span>
+    <h3><i class="fas fa-fish"></i> Fish Farm Master Control</h3>
+    <div class="status-info">
+        <i class="fas fa-circle" id="dot" style="color: #cbd5e1;"></i> 
+        <span id="status-text">Connecting...</span>
     </div>
 </header>
 
 <div class="container">
     <div id="tab-auto" class="tab-content active">
         <div class="sensor-grid">
-            <div class="sensor-card"><i class="fas fa-water" style="color:#0288d1"></i><span class="val" id="lvl-v">--</span><small>ระดับน้ำ</small></div>
-            <div class="sensor-card"><i class="fas fa-bolt" style="color:#fbc02d"></i><span class="val" id="tds-v">--</span><small>ความสะอาด</small></div>
-            <div class="sensor-card"><i class="fas fa-temperature-high" style="color:#f44336"></i><span class="val" id="temp-v">--</span><small>อุณหภูมิ</small></div>
-            <div class="sensor-card"><i class="fas fa-flask" style="color:#9c27b0"></i><span class="val" id="ph-v">--</span><small>ค่า pH</small></div>
+            <div class="sensor-card"><i class="fas fa-water" style="color:#0288d1"></i><span class="val" id="lvl-v">--</span><small>Level</small></div>
+            <div class="sensor-card"><i class="fas fa-bolt" style="color:#fbc02d"></i><span class="val" id="tds-v">--</span><small>TDS</small></div>
+            <div class="sensor-card"><i class="fas fa-temperature-high" style="color:#f44336"></i><span class="val" id="temp-v">--</span><small>Temp</small></div>
+            <div class="sensor-card"><i class="fas fa-flask" style="color:#9c27b0"></i><span class="val" id="ph-v">--</span><small>pH</small></div>
         </div>
 
         <div class="panel">
-            <div class="panel-header" style="color: var(--primary);">
-                <span><i class="fas fa-robot"></i> ระบบระบายน้ำทิ้ง</span>
-            </div>
+            <div class="panel-header" style="color: var(--primary);"><i class="fas fa-robot"></i> ระบายน้ำอัตโนมัติ (แยกโหมด)</div>
             <div class="row">
-                <span style="font-size: 0.9rem;"><i class="fas fa-level-up-alt"></i> คุมระดับน้ำ (Level)</span>
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <div class="input-group">
-                        <input type="number" id="limit-lvl" class="num-input" onchange="saveAll()">
-                        <span class="unit">%</span>
-                    </div>
-                    <label class="switch"><input type="checkbox" id="sw-lvl" onchange="saveAll()"><span class="slider"></span></label>
+                <span><i class="fas fa-level-up-alt"></i> ระดับน้ำ ></span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div class="input-group"><input type="number" id="l-lvl" class="num-input" onchange="save()"><span style="font-size:0.7rem;">%</span></div>
+                    <label class="switch"><input type="checkbox" id="e-lvl" onchange="save()"><span class="slider"></span></label>
                 </div>
             </div>
             <div class="row">
-                <span style="font-size: 0.9rem;"><i class="fas fa-vial"></i> คุมความสกปรก (TDS)</span>
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <div class="input-group">
-                        <input type="number" id="limit-tds" class="num-input" onchange="saveAll()">
-                        <span class="unit">ppm</span>
-                    </div>
-                    <label class="switch"><input type="checkbox" id="sw-tds" onchange="saveAll()"><span class="slider"></span></label>
+                <span><i class="fas fa-vial"></i> ความสะอาด ></span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div class="input-group"><input type="number" id="l-tds" class="num-input" onchange="save()"><span style="font-size:0.7rem;">ppm</span></div>
+                    <label class="switch"><input type="checkbox" id="e-tds" onchange="save()"><span class="slider"></span></label>
+                </div>
+            </div>
+            <div class="row">
+                <span><i class="fas fa-skull-crossbones"></i> กรด-ด่าง <</span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div class="input-group"><input type="number" step="0.1" id="l-ph" class="num-input" onchange="save()"><span style="font-size:0.7rem;">pH</span></div>
+                    <label class="switch"><input type="checkbox" id="e-ph" onchange="save()"><span class="slider"></span></label>
                 </div>
             </div>
         </div>
 
         <div class="panel panel-secondary">
-            <div class="panel-header" style="color: var(--secondary);">
-                <span><i class="fas fa-clock"></i> ตั้งเวลาให้อาหาร</span>
-                <label class="switch"><input type="checkbox" id="sw-feed" onchange="saveAll()"><span class="slider"></span></label>
-            </div>
+            <div class="panel-header" style="color: var(--secondary);"><span><i class="fas fa-clock"></i> ให้อาหารอัตโนมัติ</span><label class="switch"><input type="checkbox" id="e-f" onchange="save()"><span class="slider"></span></label></div>
             <div class="row">
-                <span style="font-size: 0.9rem;"><i class="fas fa-sun"></i> รอบเช้า</span>
+                <span><i class="fas fa-sun"></i> รอบเช้า</span>
                 <div class="input-group">
-                    <input type="time" id="f-t1" class="time-input" onchange="saveAll()">
-                    <input type="text" id="f-d1" class="dur-input" placeholder="00:05" oninput="fmtTime(this)" onchange="saveAll()">
+                    <input type="time" id="f-t1" class="time-input" onchange="save()">
+                    <input type="text" id="f-d1" class="dur-input" placeholder="00:05" oninput="fmtSS(this)" onchange="save()">
                 </div>
             </div>
             <div class="row">
-                <span style="font-size: 0.9rem;"><i class="fas fa-moon"></i> รอบเย็น</span>
+                <span><i class="fas fa-moon"></i> รอบเย็น</span>
                 <div class="input-group">
-                    <input type="time" id="f-t2" class="time-input" onchange="saveAll()">
-                    <input type="text" id="f-d2" class="dur-input" placeholder="00:05" oninput="fmtTime(this)" onchange="saveAll()">
+                    <input type="time" id="f-t2" class="time-input" onchange="save()">
+                    <input type="text" id="f-d2" class="dur-input" placeholder="00:05" oninput="fmtSS(this)" onchange="save()">
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="tab-manual" class="tab-content">
+    <div id="tab-man" class="tab-content">
         <div class="panel">
-            <div class="panel-header">
-                <span><i class="fas fa-faucet"></i> สั่งระบายน้ำทันที</span>
-                <div id="light-drain" class="status-light light-off"></div>
-            </div>
-            <button id="btn-drain" class="btn btn-blue" onclick="manAction('drain')"><i class="fas fa-play"></i> เปิดวาล์วระบายน้ำ</button>
+            <div class="panel-header"><span><i class="fas fa-faucet"></i> สั่งระบายน้ำทิ้ง</span><div id="l-drain" class="status-light"></div></div>
+            <button id="b-drain" class="btn btn-blue" onclick="ctrl('drain')"><i class="fas fa-play"></i> เปิดวาล์วระบายน้ำ</button>
         </div>
-
         <div class="panel panel-secondary">
-            <div class="panel-header">
-                <span><i class="fas fa-cookie-bite"></i> สั่งให้อาหารทันที</span>
-                <div id="light-feeder" class="status-light light-off"></div>
-            </div>
-            <div class="row" style="border:none; margin-bottom:5px;">
-                <span style="font-size:0.85rem;">ระบุเวลา (วินาที)</span>
-                <div class="input-group"><input type="text" id="man-dur-f" class="dur-input" placeholder="00:05" oninput="fmtTime(this)"></div>
-            </div>
-            <button id="btn-feeder" class="btn btn-cyan" onclick="manAction('feeder')"><i class="fas fa-utensils"></i> ปล่อยอาหารตอนนี้</button>
+            <div class="panel-header"><span><i class="fas fa-cookie-bite"></i> สั่งให้อาหารทันที</span><div id="l-feeder" class="status-light"></div></div>
+            <div class="row" style="border:none;"><span style="font-size:0.85rem;">ระบุเวลา (วินาที)</span><div class="input-group"><input type="text" id="m-dur-f" class="dur-input" placeholder="00:05" oninput="fmtSS(this)"></div></div>
+            <button id="b-feeder" class="btn btn-cyan" onclick="ctrl('feeder')"><i class="fas fa-utensils"></i> ให้อาหารตอนนี้</button>
         </div>
     </div>
 </div>
 
 <nav class="bottom-nav">
-    <button class="nav-item active" onclick="goTab('tab-auto', this)"><i class="fas fa-th-large"></i><span>แผงควบคุม</span></button>
-    <button class="nav-item" onclick="goTab('tab-manual', this)"><i class="fas fa-hand-pointer"></i><span>สั่งการเอง</span></button>
+    <button class="nav-item active" onclick="tab('tab-auto', this)"><i class="fas fa-th-large"></i><span>อัตโนมัติ</span></button>
+    <button class="nav-item" onclick="tab('tab-man', this)"><i class="fas fa-hand-pointer"></i><span>สั่งการเอง</span></button>
 </nav>
 
 <script>
-    // --- ตั้งค่า Firebase ---
     const firebaseConfig = { databaseURL: "https://smart-fish-farm-default-rtdb.firebaseio.com" }; 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Helper Functions
-    function fmtTime(i) {
-        let v = i.value.replace(/\D/g, '');
-        if (v.length > 4) v = v.slice(0, 4);
-        i.value = v.length >= 3 ? v.slice(0, 2) + ':' + v.slice(2) : v;
-    }
-    function toS(str) {
-        if(!str || !str.includes(':')) return 5;
-        const p = str.split(':');
-        return (parseInt(p[0]) || 0) * 60 + (parseInt(p[1]) || 0);
-    }
-    function toM(s) {
-        if(!s) return "";
-        return (Math.floor(s/60)).toString().padStart(2,'0')+":"+(s%60).toString().padStart(2,'0');
-    }
-    function goTab(id, btn) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        btn.classList.add('active');
-    }
+    function fmtSS(i){ let v=i.value.replace(/\D/g,''); if(v.length>4)v=v.slice(0,4); i.value=v.length>=3?v.slice(0,2)+':'+v.slice(2):v; }
+    function toS(s){ if(!s||!s.includes(':'))return 5; const p=s.split(':'); return (parseInt(p[0])||0)*60+(parseInt(p[1])||0); }
+    function toM(s){ if(!s)return ""; return (Math.floor(s/60)).toString().padStart(2,'0')+":"+(s%60).toString().padStart(2,'0'); }
+    function tab(id, b){ document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); document.getElementById(id).classList.add('active'); b.classList.add('active'); }
 
-    // Real-time Sync
-    db.ref().on("value", (snapshot) => {
-        const data = snapshot.val();
-        if(!data) return;
-
-        if(data.sensor) {
-            document.getElementById('lvl-v').innerText = data.sensor.level + "%";
-            document.getElementById('tds-v').innerText = data.sensor.tds;
-            document.getElementById('temp-v').innerText = data.sensor.temp.toFixed(1) + "°";
-            document.getElementById('ph-v').innerText = data.sensor.ph;
-            document.getElementById('dot').style.color = "#4caf50";
-            document.getElementById('status-text').innerText = "เชื่อมต่อแล้ว";
+    db.ref().on("value", (snap) => {
+        const d = snap.val(); if(!d) return;
+        if(d.sensor){
+            document.getElementById('lvl-v').innerText = d.sensor.level+"%";
+            document.getElementById('tds-v').innerText = d.sensor.tds;
+            document.getElementById('temp-v').innerText = d.sensor.temp.toFixed(1)+"°";
+            document.getElementById('ph-v').innerText = d.sensor.ph.toFixed(1);
+            document.getElementById('dot').style.color = "#4caf50"; document.getElementById('status-text').innerText = "เชื่อมต่อแล้ว";
         }
-
-        if(data.control) {
-            updBtn('drain', data.control.drain.run);
-            updBtn('feeder', data.control.feeder.run);
+        if(d.control) {
+            updBtn('drain', d.control.drain.run);
+            updBtn('feeder', d.control.feeder.run);
         }
-
-        if(data.config && document.activeElement.tagName !== 'INPUT') {
-            const c = data.config;
-            document.getElementById('sw-lvl').checked = c.lvl_en;
-            document.getElementById('limit-lvl').value = c.lvl_lim;
-            document.getElementById('sw-tds').checked = c.tds_en;
-            document.getElementById('limit-tds').value = c.tds_lim;
-            document.getElementById('sw-feed').checked = c.f_en;
-            document.getElementById('f-t1').value = c.f_t1 || "";
-            document.getElementById('f-d1').value = toM(c.f_d1);
-            document.getElementById('f-t2').value = c.f_t2 || "";
-            document.getElementById('f-d2').value = toM(c.f_d2);
+        if(d.config && document.activeElement.tagName !== 'INPUT') {
+            const c = d.config;
+            document.getElementById('e-lvl').checked = c.lvl_en; document.getElementById('l-lvl').value = c.lvl_l;
+            document.getElementById('e-tds').checked = c.tds_en; document.getElementById('l-tds').value = c.tds_l;
+            document.getElementById('e-ph').checked = c.ph_en; document.getElementById('l-ph').value = c.ph_l;
+            document.getElementById('e-f').checked = c.f_en; 
+            document.getElementById('f-t1').value = c.f_t1; document.getElementById('f-d1').value = toM(c.f_d1);
+            document.getElementById('f-t2').value = c.f_t2; document.getElementById('f-d2').value = toM(c.f_d2);
         }
     });
 
-    function updBtn(id, isRun) {
-        const b = document.getElementById(`btn-${id}`);
-        const l = document.getElementById(`light-${id}`);
-        if(isRun) {
-            b.innerHTML = '<i class="fas fa-stop-circle"></i> สั่งหยุดทำงาน';
-            b.className = "btn btn-stop";
-            l.className = "status-light light-on";
-        } else {
-            b.innerHTML = (id==='drain' ? '<i class="fas fa-play"></i> เปิดวาล์วระบายน้ำ' : '<i class="fas fa-utensils"></i> ปล่อยอาหารตอนนี้');
-            b.className = (id==='drain' ? "btn btn-blue" : "btn btn-cyan");
-            l.className = "status-light light-off";
-        }
+    function updBtn(id, r) {
+        const b = document.getElementById(`b-${id}`);
+        const l = document.getElementById(`l-${id}`);
+        b.innerHTML = r ? '<i class="fas fa-stop"></i> หยุดทำงาน' : (id==='drain'?'<i class="fas fa-play"></i> เปิดวาล์ว':'<i class="fas fa-utensils"></i> ให้อาหารตอนนี้');
+        b.className = r ? "btn btn-stop" : (id==='drain'?"btn btn-blue":"btn btn-cyan");
+        l.className = r ? "status-light light-on" : "status-light";
     }
 
-    function manAction(id) {
-        const isR = document.getElementById(`btn-${id}`).classList.contains('btn-stop');
-        const dur = toS(document.getElementById('man-dur-f')?.value || "00:05");
-        db.ref(`control/${id}`).update({ run: !isR, duration: dur });
-    }
-
-    function saveAll() {
+    function ctrl(id){ const isR = document.getElementById(`b-${id}`).classList.contains('btn-stop'); const dur = toS(document.getElementById('m-dur-f')?.value || "00:05"); db.ref(`control/${id}`).update({run:!isR, duration: dur}); }
+    
+    function save(){
         db.ref('config').set({
-            lvl_en: document.getElementById('sw-lvl').checked,
-            lvl_lim: parseInt(document.getElementById('limit-lvl').value) || 0,
-            tds_en: document.getElementById('sw-tds').checked,
-            tds_lim: parseInt(document.getElementById('limit-tds').value) || 0,
-            f_en: document.getElementById('sw-feed').checked,
-            f_t1: document.getElementById('f-t1').value,
-            f_d1: toS(document.getElementById('f-d1').value),
-            f_t2: document.getElementById('f-t2').value,
-            f_d2: toS(document.getElementById('f-d2').value)
+            lvl_en: document.getElementById('e-lvl').checked, lvl_l: parseInt(document.getElementById('l-lvl').value)||0,
+            tds_en: document.getElementById('e-tds').checked, tds_l: parseInt(document.getElementById('l-tds').value)||0,
+            ph_en: document.getElementById('e-ph').checked, ph_l: parseFloat(document.getElementById('l-ph').value)||0,
+            f_en: document.getElementById('e-f').checked, 
+            f_t1: document.getElementById('f-t1').value, f_d1: toS(document.getElementById('f-d1').value),
+            f_t2: document.getElementById('f-t2').value, f_d2: toS(document.getElementById('f-d2').value)
         });
     }
 </script>
