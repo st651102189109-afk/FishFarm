@@ -79,7 +79,7 @@
 <body>
 
 <header>
-    <h3><i class="fas fa-fish"></i> Fish Farm Master Control</h3>
+    <h3><i class="fas fa-fish"></i> โรงเรือนบ่อเลี้ยงปลาอัจฉริยะ</h3>
     <div class="status-info">
         <i class="fas fa-circle" id="dot" style="color: #cbd5e1;"></i> 
         <span id="status-text">Connecting...</span>
@@ -89,17 +89,17 @@
 <div class="container">
     <div id="tab-auto" class="tab-content active">
         <div class="sensor-grid">
-            <div class="sensor-card"><i class="fas fa-water" style="color:#0288d1"></i><span class="val" id="lvl-v">--</span><small>Level</small></div>
-            <div class="sensor-card"><i class="fas fa-bolt" style="color:#fbc02d"></i><span class="val" id="tds-v">--</span><small>TDS</small></div>
-            <div class="sensor-card"><i class="fas fa-temperature-high" style="color:#f44336"></i><span class="val" id="temp-v">--</span><small>Temp</small></div>
-            <div class="sensor-card"><i class="fas fa-flask" style="color:#9c27b0"></i><span class="val" id="ph-v">--</span><small>pH</small></div>
+            <div class="sensor-card"><i class="fas fa-water" style="color:#0288d1"></i><span class="val" id="lvl-v">--</span><small>ระดับน้ำ</small></div>
+            <div class="sensor-card"><i class="fas fa-bolt" style="color:#fbc02d"></i><span class="val" id="tds-v">--</span><small>ความสะอาด</small></div>
+            <div class="sensor-card"><i class="fas fa-temperature-high" style="color:#f44336"></i><span class="val" id="temp-v">--</span><small>อุณหภูมิ</small></div>
+            <div class="sensor-card"><i class="fas fa-flask" style="color:#9c27b0"></i><span class="val" id="ph-v">--</span><small>กรด-ด่าง (pH)</small></div>
         </div>
 
         <div class="panel">
             <div class="panel-header" style="color: var(--primary);"><i class="fas fa-robot"></i> ระบายน้ำอัตโนมัติ (TDS/pH)</div>
             
             <div class="row">
-                <span><i class="fas fa-vial"></i> ความสะอาด (TDS)</span>
+                <span><i class="fas fa-vial"></i> ความขุ่นของน้ำ (TDS) ></span>
                 <div style="display:flex; align-items:center; gap:8px;">
                     <div class="input-group"><input type="number" id="l-tds" class="num-input" onchange="save()"><span style="font-size:0.7rem;">ppm</span></div>
                     <label class="switch"><input type="checkbox" id="e-tds" onchange="save()"><span class="slider"></span></label>
@@ -107,7 +107,7 @@
             </div>
             
             <div class="row">
-                <span><i class="fas fa-skull-crossbones"></i> กรด-ด่าง (pH)</span>
+                <span><i class="fas fa-skull-crossbones"></i> กรด-ด่าง (pH) <</span>
                 <div style="display:flex; align-items:center; gap:8px;">
                     <div class="input-group"><input type="number" step="0.1" id="l-ph" class="num-input" onchange="save()"><span style="font-size:0.7rem;">pH</span></div>
                     <label class="switch"><input type="checkbox" id="e-ph" onchange="save()"><span class="slider"></span></label>
@@ -215,5 +215,6 @@
 </script>
 </body>
 </html>
+
 
 
