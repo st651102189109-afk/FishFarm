@@ -92,7 +92,7 @@
             <div class="sensor-card"><i class="fas fa-water" style="color:#0288d1"></i><span class="val" id="lvl-v">--</span><small>ระดับน้ำ</small></div>
             <div class="sensor-card"><i class="fas fa-bolt" style="color:#fbc02d"></i><span class="val" id="tds-v">--</span><small>ความสะอาด</small></div>
             <div class="sensor-card"><i class="fas fa-temperature-high" style="color:#f44336"></i><span class="val" id="temp-v">--</span><small>อุณหภูมิ</small></div>
-            <div class="sensor-card"><i class="fas fa-flask" style="color:#9c27b0"></i><span class="val" id="ph-v">--</span><small>กรด-ด่าง (pH)</small></div>
+            <div class="sensor-card"><i class="fas fa-flask" style="color:#9c27b0"></i><span class="val" id="ph-v">--</span><small>ค่า pH ของน้ำ</small></div>
         </div>
 
         <div class="panel">
@@ -107,7 +107,7 @@
             </div>
             
             <div class="row">
-                <span><i class="fas fa-skull-crossbones"></i> กรด-ด่าง (pH) <</span>
+                <span><i class="fas fa-skull-crossbones"></i> ค่า pH ของน้ำ <</span>
                 <div style="display:flex; align-items:center; gap:8px;">
                     <div class="input-group"><input type="number" step="0.1" id="l-ph" class="num-input" onchange="save()"><span style="font-size:0.7rem;">pH</span></div>
                     <label class="switch"><input type="checkbox" id="e-ph" onchange="save()"><span class="slider"></span></label>
@@ -215,6 +215,7 @@
 </script>
 </body>
 </html>
+
 
 
 
