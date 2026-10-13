@@ -157,7 +157,8 @@
 </nav>
 
 <script>
-    const firebaseConfig = { databaseURL: "https://smart-fish-farm-default-rtdb.firebaseio.com" }; 
+    // เชื่อมต่อ Firebase Realtime Database ให้ตรงกับ ESP32
+    const firebaseConfig = { databaseURL: "https://smartfarmfish-aaab7-default-rtdb.asia-southeast1.firebasedatabase.app" }; 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
@@ -169,19 +170,19 @@
     db.ref().on("value", (snap) => {
         const d = snap.val(); if(!d) return;
         if(d.sensor){
-            document.getElementById('lvl-v').innerText = d.sensor.level + "%";
-            document.getElementById('tds-v').innerText = d.sensor.tds;
-            document.getElementById('temp-v').innerText = d.sensor.temp.toFixed(1) + "°";
-            document.getElementById('ph-v').innerText = d.sensor.ph.toFixed(1);
+            document.getElementById('lvl-v').innerText = (d.sensor.level !== undefined ? d.sensor.level : "--") + "%";
+            document.getElementById('tds-v').innerText = d.sensor.tds !== undefined ? d.sensor.tds : "--";
+            document.getElementById('temp-v').innerText = d.sensor.temp !== undefined ? d.sensor.temp.toFixed(1) + "°" : "--";
+            document.getElementById('ph-v').innerText = d.sensor.ph !== undefined ? d.sensor.ph.toFixed(1) : "--";
             document.getElementById('dot').style.color = "#4caf50"; document.getElementById('status-text').innerText = "Online";
         }
         if(d.control) {
-            const rd = d.control.drain.run;
+            const rd = d.control.drain && d.control.drain.run;
             document.getElementById('b-drain').className = rd ? "btn btn-stop" : "btn btn-blue";
             document.getElementById('b-drain').innerHTML = rd ? '<i class="fas fa-stop"></i> หยุดระบาย' : '<i class="fas fa-play"></i> เปิดวาล์วน้ำ';
             document.getElementById('l-drain').className = rd ? "status-light light-on" : "status-light";
 
-            const rf = d.control.feeder.run;
+            const rf = d.control.feeder && d.control.feeder.run;
             document.getElementById('b-feeder').className = rf ? "btn btn-stop" : "btn btn-cyan";
             document.getElementById('b-feeder').innerHTML = rf ? '<i class="fas fa-stop"></i> หยุดทำงาน' : '<i class="fas fa-utensils"></i> เริ่มให้อาหาร';
             document.getElementById('l-feeder').className = rf ? "status-light light-on" : "status-light";
@@ -213,4 +214,3 @@
 </script>
 </body>
 </html>
-
