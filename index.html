@@ -81,6 +81,7 @@
 </header>
 
 <div class="container">
+    <!-- TAB AUTO -->
     <div id="tab-auto" class="tab-content active">
         <div class="sensor-grid">
             <div class="sensor-card"><i class="fas fa-water" style="color:#0288d1"></i><span class="val" id="lvl-v">--</span><small>ระดับน้ำ</small></div>
@@ -137,16 +138,37 @@
         </div>
     </div>
 
+    <!-- TAB MANUAL (อัปเกรดเป็น 2 วาล์ว: วาล์วน้ำเข้า และ วาล์วน้ำออก) -->
     <div id="tab-man" class="tab-content">
+        <!-- วาล์วน้ำเข้า (Water IN) -->
         <div class="panel">
-            <div class="panel-header"><span><i class="fas fa-faucet"></i> สั่งระบายน้ำทิ้ง (Manual)</span><div id="l-drain" class="status-light" style="margin-left: auto;"></div></div>
-            <button id="b-drain" class="btn btn-blue" onclick="ctrl('drain')"><i class="fas fa-play"></i> เปิดวาล์วน้ำ</button>
+            <div class="panel-header">
+                <span><i class="fas fa-faucet"></i> สั่งเติมน้ำเข้า (Water IN)</span>
+                <div id="l-in" class="status-light" style="margin-left: auto;"></div>
+            </div>
+            <button id="b-in" class="btn btn-blue" onclick="ctrl('in')"><i class="fas fa-play"></i> เปิดวาล์วน้ำเข้า</button>
         </div>
         
+        <!-- วาล์วน้ำออก / ระบายน้ำ (Water OUT) -->
         <div class="panel panel-secondary">
-            <div class="panel-header"><span><i class="fas fa-cookie-bite"></i> สั่งให้อาหารทันที</span><div id="l-feeder" class="status-light" style="margin-left: auto;"></div></div>
-            <div class="row" style="border:none;"><span style="font-size:0.85rem;">ระบุเวลา (นาที:วินาที)</span><div class="input-group"><input type="text" id="m-dur-f" class="dur-input" style="color:var(--secondary)" placeholder="00:05" oninput="fmtSS(this)"></div></div>
-            <button id="b-feeder" class="btn btn-cyan" onclick="ctrl('feeder')"><i class="fas fa-utensils"></i> เริ่มให้อาหาร</button>
+            <div class="panel-header" style="color: var(--secondary);">
+                <span><i class="fas fa-shower"></i> สั่งระบายน้ำทิ้ง (Water OUT)</span>
+                <div id="l-drain" class="status-light" style="margin-left: auto;"></div>
+            </div>
+            <button id="b-drain" class="btn btn-cyan" onclick="ctrl('drain')"><i class="fas fa-play"></i> เปิดวาล์วน้ำออก</button>
+        </div>
+
+        <!-- ให้อาหารทันที -->
+        <div class="panel" style="border-left-color: var(--purple);">
+            <div class="panel-header" style="color: var(--purple);">
+                <span><i class="fas fa-cookie-bite"></i> สั่งให้อาหารทันที</span>
+                <div id="l-feeder" class="status-light" style="margin-left: auto;"></div>
+            </div>
+            <div class="row" style="border:none;">
+                <span style="font-size:0.85rem;">ระบุเวลา (นาที:วินาที)</span>
+                <div class="input-group"><input type="text" id="m-dur-f" class="dur-input" style="color:var(--purple)" placeholder="00:05" oninput="fmtSS(this)"></div>
+            </div>
+            <button id="b-feeder" class="btn" style="background: var(--purple); color: white;" onclick="ctrl('feeder')"><i class="fas fa-utensils"></i> เริ่มให้อาหาร</button>
         </div>
     </div>
 </div>
@@ -157,7 +179,7 @@
 </nav>
 
 <script>
-    // เชื่อมต่อ Firebase Realtime Database ให้ตรงกับ ESP32
+    // เชื่อมต่อ Firebase Realtime Database
     const firebaseConfig = { databaseURL: "https://smartfarmfish-aaab7-default-rtdb.asia-southeast1.firebasedatabase.app" }; 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
@@ -169,6 +191,8 @@
 
     db.ref().on("value", (snap) => {
         const d = snap.val(); if(!d) return;
+        
+        // อัปเดตค่าเซนเซอร์
         if(d.sensor){
             document.getElementById('lvl-v').innerText = (d.sensor.level !== undefined ? d.sensor.level : "--") + "%";
             document.getElementById('tds-v').innerText = d.sensor.tds !== undefined ? d.sensor.tds : "--";
@@ -176,17 +200,30 @@
             document.getElementById('ph-v').innerText = d.sensor.ph !== undefined ? d.sensor.ph.toFixed(1) : "--";
             document.getElementById('dot').style.color = "#4caf50"; document.getElementById('status-text').innerText = "Online";
         }
+        
+        // อัปเดตสถานะปุ่มและไฟสถานะรีเลย์ (Control)
         if(d.control) {
+            // 1. วาล์วน้ำเข้า (Water IN)
+            const rin = d.control.in && d.control.in.run;
+            document.getElementById('b-in').className = rin ? "btn btn-stop" : "btn btn-blue";
+            document.getElementById('b-in').innerHTML = rin ? '<i class="fas fa-stop"></i> ปิดวาล์วน้ำเข้า' : '<i class="fas fa-play"></i> เปิดวาล์วน้ำเข้า';
+            document.getElementById('l-in').className = rin ? "status-light light-on" : "status-light";
+
+            // 2. วาล์วน้ำออก (Water OUT / Drain)
             const rd = d.control.drain && d.control.drain.run;
-            document.getElementById('b-drain').className = rd ? "btn btn-stop" : "btn btn-blue";
-            document.getElementById('b-drain').innerHTML = rd ? '<i class="fas fa-stop"></i> หยุดระบาย' : '<i class="fas fa-play"></i> เปิดวาล์วน้ำ';
+            document.getElementById('b-drain').className = rd ? "btn btn-stop" : "btn btn-cyan";
+            document.getElementById('b-drain').innerHTML = rd ? '<i class="fas fa-stop"></i> ปิดวาล์วน้ำออก' : '<i class="fas fa-play"></i> เปิดวาล์วน้ำออก';
             document.getElementById('l-drain').className = rd ? "status-light light-on" : "status-light";
 
+            // 3. ระบบให้อาหาร
             const rf = d.control.feeder && d.control.feeder.run;
-            document.getElementById('b-feeder').className = rf ? "btn btn-stop" : "btn btn-cyan";
+            document.getElementById('b-feeder').className = rf ? "btn btn-stop" : "btn";
+            document.getElementById('b-feeder').style.background = rf ? "var(--red)" : "var(--purple)";
             document.getElementById('b-feeder').innerHTML = rf ? '<i class="fas fa-stop"></i> หยุดทำงาน' : '<i class="fas fa-utensils"></i> เริ่มให้อาหาร';
             document.getElementById('l-feeder').className = rf ? "status-light light-on" : "status-light";
         }
+
+        // อัปเดตการตั้งค่า Config
         if(d.config && document.activeElement.tagName !== 'INPUT') {
             const c = d.config;
             document.getElementById('e-tds').checked = c.tds_en; document.getElementById('l-tds').value = c.tds_l; document.getElementById('d-tds').value = toM(c.tds_d);
@@ -198,7 +235,8 @@
     });
 
     function ctrl(id){ 
-        const isR = document.getElementById(`b-${id}`).classList.contains('btn-stop'); 
+        const btn = document.getElementById(`b-${id}`);
+        const isR = btn.classList.contains('btn-stop'); 
         const dur = (id === 'feeder') ? toS(document.getElementById('m-dur-f').value) : 0;
         db.ref(`control/${id}`).update({run: !isR, duration: dur}); 
     }
