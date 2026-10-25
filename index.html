@@ -38,6 +38,12 @@
         .panel { background: white; border-radius: 24px; padding: 20px; margin-bottom: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.03); border-left: 6px solid var(--primary); }
         .panel-secondary { border-left-color: var(--secondary); }
         .panel-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; font-weight: 500; font-size: 1rem; color: var(--primary); }
+        .settings-section { background: #f8fbff; border: 1px solid #e2edf7; border-radius: 16px; padding: 12px 14px; margin: 16px 0; }
+        .settings-section:first-of-type { margin-top: 8px; }
+        .settings-subheading { display: flex; align-items: center; gap: 9px; color: var(--primary); font-size: .95rem; font-weight: 500; padding: 3px 0 10px; margin-bottom: 2px; border-bottom: 1px solid #dbeafe; }
+        .settings-subheading .section-number { display: inline-flex; width: 28px; height: 28px; align-items: center; justify-content: center; border-radius: 9px; background: #dbeafe; color: var(--primary); font-size: .85rem; }
+        .settings-section .row:first-of-type { padding-top: 8px; }
+        .settings-section .row:last-child { border-bottom: none; }
         
         .row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
         .row:last-child { border: none; }
@@ -106,6 +112,8 @@
 
         <div class="panel panel-secondary" id="settings-panel">
             <div class="panel-header" style="color:var(--secondary);"><i class="fas fa-sliders"></i> ตั้งค่าการทำงานผ่านแอป</div>
+            <div class="settings-section">
+            <div class="settings-subheading"><span class="section-number">1</span><i class="fas fa-utensils"></i> ระบบให้อาหารปลา</div>
             <div class="row">
                 <span>เปิดระบบให้อาหารอัตโนมัติ</span>
                 <label class="switch"><input type="checkbox" id="cfg-feed-en" checked><span class="slider"></span></label>
@@ -115,8 +123,16 @@
             <div class="row"><span>เวลาให้อาหารรอบที่ 2</span><div class="input-group"><input type="time" id="cfg-feed-t2" class="time-input" value="16:00"></div></div>
             <div class="row"><span>ระยะเวลารอบที่ 2 (นาที:วินาที)</span><div class="input-group"><input type="text" id="cfg-feed-d2" class="dur-input" value="00:10" maxlength="5" placeholder="00:10" oninput="fmtDuration(this)"></div></div>
             <div class="row"><span>ช่วงพักปั๊มหลังถึงเวลาให้อาหาร (นาที)</span><div class="input-group"><input type="number" id="cfg-feed-pause" class="num-input" style="width:55px" min="1" max="120" value="20"></div></div>
+            </div>
+
+            <div class="settings-section">
+            <div class="settings-subheading"><span class="section-number">2</span><i class="fas fa-fan"></i> ระบบปั๊มน้ำ/ปั๊มอากาศ</div>
             <div class="row"><span>ปั๊มรอบเช้า เริ่ม–หยุด</span><div class="input-group"><input type="time" id="cfg-pump-ms" class="time-input" value="05:00"><span>–</span><input type="time" id="cfg-pump-me" class="time-input" value="11:00"></div></div>
             <div class="row"><span>ปั๊มรอบบ่าย เริ่ม–หยุด</span><div class="input-group"><input type="time" id="cfg-pump-as" class="time-input" value="15:00"><span>–</span><input type="time" id="cfg-pump-ae" class="time-input" value="21:00"></div></div>
+            </div>
+
+            <div class="settings-section">
+            <div class="settings-subheading"><span class="section-number">3</span><i class="fas fa-water"></i> ระบบน้ำเข้าและน้ำออก</div>
             <div class="row"><span>เปิดระบบเปลี่ยนน้ำตามเวลา</span><label class="switch"><input type="checkbox" id="cfg-water-sched-en" checked><span class="slider"></span></label></div>
             <div class="row"><span>เวลาเริ่มเปลี่ยนน้ำประจำวัน</span><div class="input-group"><input type="time" id="cfg-water-time" class="time-input" value="08:00"></div></div>
             <div class="row"><span>เปิดควบคุมระดับน้ำอัตโนมัติ</span><label class="switch"><input type="checkbox" id="cfg-water-level-en" checked><span class="slider"></span></label></div>
@@ -125,6 +141,7 @@
             <div class="row"><span>ระดับหยุดระบายน้ำ (ซม.)</span><div class="input-group"><input type="number" id="cfg-water-drain" class="num-input" style="width:70px" min="1" max="69" step="0.5" value="25"></div></div>
             <div class="row"><span>ระดับหยุดเติมน้ำ (ซม.)</span><div class="input-group"><input type="number" id="cfg-water-fill" class="num-input" style="width:70px" min="2" max="70" step="0.5" value="35"></div></div>
             <div class="row"><span>เวลาสูงสุดของการเปลี่ยนน้ำ (นาที)</span><div class="input-group"><input type="number" id="cfg-water-max-min" class="num-input" style="width:70px" min="1" max="180" value="30"></div></div>
+            </div>
             <button id="save-settings" class="btn btn-blue" onclick="saveSettings()"><i class="fas fa-floppy-disk"></i> บันทึกการตั้งค่า</button>
             <p style="font-size:0.75rem;color:#64748b;margin:12px 0 0;">ค่าที่บันทึกจะส่งไปยัง Firebase และ ESP32 จะอ่านค่าภายในประมาณ 5 วินาที โปรดตั้งเวลารอบให้อาหารให้ห่างกัน และตรวจสอบช่วงพักปั๊มก่อนใช้งาน</p>
             <div id="settings-message" role="status" style="font-size:0.8rem;margin-top:8px;"></div>
