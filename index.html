@@ -101,7 +101,7 @@
             <div class="row"><span><i class="fas fa-ruler-vertical"></i> เซนเซอร์ระดับน้ำ</span><strong id="water-sensor-status">รอข้อมูล</strong></div>
             <div class="row"><span><i class="fas fa-utensils"></i> มอเตอร์ให้อาหาร</span><strong id="feeding-status">รอข้อมูล</strong></div>
             <div class="row"><span><i class="fas fa-fan"></i> ปั๊มน้ำ/ปั๊มอากาศ</span><strong id="pump-status">รอข้อมูล</strong></div>
-            
+            <p style="font-size:0.75rem;color:#64748b;margin:12px 0 0;">ระบบน้ำทำงานตามเวลาที่ตั้งไว้หรือระดับน้ำที่กำหนด โดยไม่ใช้เซนเซอร์ pH และความขุ่น</p>
         </div>
 
         <div class="panel panel-secondary" id="settings-panel">
@@ -117,8 +117,14 @@
             <div class="row"><span>ช่วงพักปั๊มหลังถึงเวลาให้อาหาร (นาที)</span><div class="input-group"><input type="number" id="cfg-feed-pause" class="num-input" style="width:55px" min="1" max="120" value="20"></div></div>
             <div class="row"><span>ปั๊มรอบเช้า เริ่ม–หยุด</span><div class="input-group"><input type="time" id="cfg-pump-ms" class="time-input" value="05:00"><span>–</span><input type="time" id="cfg-pump-me" class="time-input" value="11:00"></div></div>
             <div class="row"><span>ปั๊มรอบบ่าย เริ่ม–หยุด</span><div class="input-group"><input type="time" id="cfg-pump-as" class="time-input" value="15:00"><span>–</span><input type="time" id="cfg-pump-ae" class="time-input" value="21:00"></div></div>
-            <div class="row"><span>ระดับหยุดระบายน้ำ (ซม.)</span><div class="input-group"><input type="number" id="cfg-water-drain" class="num-input" style="width:60px" min="1" max="69" step="0.5" value="25"></div></div>
-            <div class="row"><span>ระดับหยุดเติมน้ำ (ซม.)</span><div class="input-group"><input type="number" id="cfg-water-fill" class="num-input" style="width:60px" min="2" max="70" step="0.5" value="35"></div></div>
+            <div class="row"><span>เปิดระบบเปลี่ยนน้ำตามเวลา</span><label class="switch"><input type="checkbox" id="cfg-water-sched-en" checked><span class="slider"></span></label></div>
+            <div class="row"><span>เวลาเริ่มเปลี่ยนน้ำประจำวัน</span><div class="input-group"><input type="time" id="cfg-water-time" class="time-input" value="08:00"></div></div>
+            <div class="row"><span>เปิดควบคุมระดับน้ำอัตโนมัติ</span><label class="switch"><input type="checkbox" id="cfg-water-level-en" checked><span class="slider"></span></label></div>
+            <div class="row"><span>ระดับเริ่มเติมน้ำ (ซม.)</span><div class="input-group"><input type="number" id="cfg-water-low" class="num-input" style="width:70px" min="1" max="69" step="0.5" value="30"></div></div>
+            <div class="row"><span>ระดับเริ่มระบายน้ำ (ซม.)</span><div class="input-group"><input type="number" id="cfg-water-high" class="num-input" style="width:70px" min="2" max="70" step="0.5" value="35"></div></div>
+            <div class="row"><span>ระดับหยุดระบายน้ำ (ซม.)</span><div class="input-group"><input type="number" id="cfg-water-drain" class="num-input" style="width:70px" min="1" max="69" step="0.5" value="25"></div></div>
+            <div class="row"><span>ระดับหยุดเติมน้ำ (ซม.)</span><div class="input-group"><input type="number" id="cfg-water-fill" class="num-input" style="width:70px" min="2" max="70" step="0.5" value="35"></div></div>
+            <div class="row"><span>เวลาสูงสุดของการเปลี่ยนน้ำ (นาที)</span><div class="input-group"><input type="number" id="cfg-water-max-min" class="num-input" style="width:70px" min="1" max="180" value="30"></div></div>
             <button id="save-settings" class="btn btn-blue" onclick="saveSettings()"><i class="fas fa-floppy-disk"></i> บันทึกการตั้งค่า</button>
             <p style="font-size:0.75rem;color:#64748b;margin:12px 0 0;">ค่าที่บันทึกจะส่งไปยัง Firebase และ ESP32 จะอ่านค่าภายในประมาณ 5 วินาที โปรดตั้งเวลารอบให้อาหารให้ห่างกัน และตรวจสอบช่วงพักปั๊มก่อนใช้งาน</p>
             <div id="settings-message" role="status" style="font-size:0.8rem;margin-top:8px;"></div>
@@ -133,7 +139,12 @@
                 <div id="l-drain" class="status-light" style="margin-left:auto;"></div>
             </div>
             <button id="b-drain" class="btn btn-cyan" onclick="ctrl('drain')"><i class="fas fa-play"></i> เปิดวาล์วน้ำออก</button>
-            <p style="font-size:0.75rem;color:#64748b;margin:12px 0 0;">คำสั่งนี้จะทำงานเมื่อเซนเซอร์ระดับน้ำปกติและไม่มีการเปลี่ยนถ่ายน้ำอัตโนมัติ ระบบจะหยุดระบายน้ำเมื่อระดับน้ำถึง 25 ซม.</p>
+            <p style="font-size:0.75rem;color:#64748b;margin:12px 0 0;">ระบบจะหยุดระบายน้ำเมื่อถึงระดับหยุดที่ตั้งไว้ และปิดวาล์วหากเซนเซอร์ผิดปกติ</p>
+        </div>
+        <div class="panel panel-secondary">
+            <div class="panel-header" style="color:var(--secondary);"><span><i class="fas fa-faucet"></i> สั่งปล่อยน้ำเข้า</span><div id="l-inlet" class="status-light" style="margin-left:auto;"></div></div>
+            <button id="b-inlet" class="btn btn-blue" onclick="ctrl('inlet')"><i class="fas fa-play"></i> เปิดวาล์วน้ำเข้า</button>
+            <p style="font-size:0.75rem;color:#64748b;margin:12px 0 0;">ระบบจะหยุดเติมน้ำเมื่อถึงระดับหยุดเติมที่ตั้งไว้ และไม่อนุญาตให้เปิดน้ำเข้าและน้ำออกพร้อมกัน</p>
         </div>
 
         <div class="panel" style="border-left-color:var(--purple);">
@@ -142,7 +153,7 @@
                 <div id="l-feeder" class="status-light" style="margin-left:auto;"></div>
             </div>
             <button id="b-feeder" class="btn" style="background:var(--purple);color:white;" onclick="ctrl('feeder')"><i class="fas fa-utensils"></i> ส่งคำสั่งให้อาหาร</button>
-            <p style="font-size:0.75rem;color:#64748b;margin:12px 0 0;">เฟิร์มแวร์รับคำสั่งนี้เฉพาะช่วง 09:00–09:20 น. หรือ 16:00–16:20 น. และมอเตอร์ทำงานครั้งละ 10 วินาทีตามโค้ด ESP32 ไม่สามารถกำหนดระยะเวลาจากแอปได้</p>
+            <p style="font-size:0.75rem;color:#64748b;margin:12px 0 0;">สั่งให้อาหารได้จากแอปเมื่อระบบไม่กำลังให้อาหารหรือเปลี่ยนน้ำ มอเตอร์จะหยุดเองตามระยะเวลาที่ตั้งไว้</p>
         </div>
     </div>
 </div>
@@ -162,6 +173,7 @@
     let firebaseConnected = false;
     let lastSensorUpdateMs = 0;
     let currentDrainRun = false;
+    let currentInletRun = false;
     let feedCommandPending = false;
 
     function setConnectionStatus(ok, message) {
@@ -185,7 +197,7 @@
     }
 
     let configLoaded = false;
-    const configInputIds = ['cfg-feed-en','cfg-feed-t1','cfg-feed-d1','cfg-feed-t2','cfg-feed-d2','cfg-feed-pause','cfg-pump-ms','cfg-pump-me','cfg-pump-as','cfg-pump-ae','cfg-water-drain','cfg-water-fill'];
+    const configInputIds = ['cfg-feed-en','cfg-feed-t1','cfg-feed-d1','cfg-feed-t2','cfg-feed-d2','cfg-feed-pause','cfg-pump-ms','cfg-pump-me','cfg-pump-as','cfg-pump-ae','cfg-water-sched-en','cfg-water-time','cfg-water-level-en','cfg-water-low','cfg-water-high','cfg-water-drain','cfg-water-fill','cfg-water-max-min'];
     configInputIds.forEach(id => {
         const el = document.getElementById(id);
         el.addEventListener('focus', () => { el.dataset.editing = '1'; });
@@ -235,6 +247,12 @@
         document.getElementById('cfg-pump-me').value = minutesToTime(d.pump_m_end, '11:00');
         document.getElementById('cfg-pump-as').value = minutesToTime(d.pump_a_start, '15:00');
         document.getElementById('cfg-pump-ae').value = minutesToTime(d.pump_a_end, '21:00');
+        document.getElementById('cfg-water-sched-en').checked = d.water_sched_en !== undefined ? !!d.water_sched_en : true;
+        document.getElementById('cfg-water-time').value = minutesToTime(d.water_sched_time, '08:00');
+        document.getElementById('cfg-water-level-en').checked = d.water_level_auto_en !== undefined ? !!d.water_level_auto_en : true;
+        document.getElementById('cfg-water-low').value = d.water_low_level !== undefined ? d.water_low_level : 30;
+        document.getElementById('cfg-water-high').value = d.water_high_level !== undefined ? d.water_high_level : 35;
+        document.getElementById('cfg-water-max-min').value = d.water_max_run_min !== undefined ? d.water_max_run_min : 30;
         document.getElementById('cfg-water-drain').value = d.water_drain_level !== undefined ? d.water_drain_level : 25;
         document.getElementById('cfg-water-fill').value = d.water_fill_level !== undefined ? d.water_fill_level : 35;
         configLoaded = true;
@@ -256,11 +274,17 @@
         const as = document.getElementById('cfg-pump-as').value;
         const ae = document.getElementById('cfg-pump-ae').value;
         const drain = Number(document.getElementById('cfg-water-drain').value);
+        const waterTime = document.getElementById('cfg-water-time').value;
+        const waterLow = Number(document.getElementById('cfg-water-low').value);
+        const waterHigh = Number(document.getElementById('cfg-water-high').value);
+        const waterMaxMin = Number(document.getElementById('cfg-water-max-min').value);
         const fill = Number(document.getElementById('cfg-water-fill').value);
-        if (!t1 || !t2 || !ms || !me || !as || !ae) { alert('กรุณากำหนดเวลาให้ครบทุกช่อง'); return; }
+        if (!t1 || !t2 || !ms || !me || !as || !ae || !waterTime) { alert('กรุณากำหนดเวลาให้ครบทุกช่อง'); return; }
         if (t1 === t2) { alert('เวลาให้อาหารรอบที่ 1 และ 2 ต้องไม่ตรงกัน'); return; }
         if (!Number.isInteger(pause) || pause < 1 || pause > 120) { alert('ช่วงพักปั๊มต้องอยู่ระหว่าง 1–120 นาที'); return; }
         if (drain < 1 || fill > 70 || drain >= fill) { alert('ระดับหยุดระบายน้ำต้องน้อยกว่าระดับหยุดเติมน้ำ และอยู่ในช่วงที่กำหนด'); return; }
+        if (waterLow < 1 || waterHigh > 70 || waterLow >= waterHigh) { alert('ระดับเริ่มเติมน้ำต้องน้อยกว่าระดับเริ่มระบายน้ำ'); return; }
+        if (!Number.isInteger(waterMaxMin) || waterMaxMin < 1 || waterMaxMin > 180) { alert('เวลาสูงสุดเปลี่ยนน้ำต้องอยู่ระหว่าง 1–180 นาที'); return; }
         const config = {
             feed_en: document.getElementById('cfg-feed-en').checked,
             feed_t1: timeToMinutes(t1, 540), feed_d1: d1,
@@ -268,7 +292,11 @@
             feed_pause_min: pause,
             pump_m_start: timeToMinutes(ms, 300), pump_m_end: timeToMinutes(me, 660),
             pump_a_start: timeToMinutes(as, 900), pump_a_end: timeToMinutes(ae, 1260),
-            water_drain_level: drain, water_fill_level: fill,
+            water_sched_en: document.getElementById('cfg-water-sched-en').checked,
+            water_sched_time: timeToMinutes(waterTime, 480),
+            water_level_auto_en: document.getElementById('cfg-water-level-en').checked,
+            water_low_level: waterLow, water_high_level: waterHigh,
+            water_drain_level: drain, water_fill_level: fill, water_max_run_min: waterMaxMin,
             updated_at: Date.now()
         };
         if (config.pump_m_start >= config.pump_m_end || config.pump_a_start >= config.pump_a_end) {
@@ -332,6 +360,12 @@
         document.getElementById('l-drain').className = currentDrainRun
             ? 'status-light light-on' : 'status-light';
 
+        currentInletRun = !!(control.inlet && control.inlet.run);
+        const inletButton = document.getElementById('b-inlet');
+        inletButton.className = currentInletRun ? 'btn btn-stop' : 'btn btn-blue';
+        inletButton.innerHTML = currentInletRun ? '<i class="fas fa-stop"></i> หยุดปล่อยน้ำเข้า' : '<i class="fas fa-play"></i> เปิดวาล์วน้ำเข้า';
+        document.getElementById('l-inlet').className = currentInletRun ? 'status-light light-on' : 'status-light';
+
         // การให้อาหารเป็น trigger ชั่วขณะใน firmware ไม่ใช่สวิตช์เปิด/ปิดค้าง
         const isFeeding = status.feeding === true;
         document.getElementById('l-feeder').className = isFeeding
@@ -364,6 +398,13 @@
                     alert('ส่งคำสั่งระบายน้ำไม่สำเร็จ: ' + (error && error.message ? error.message : 'ตรวจสอบ Firebase Rules'));
                     console.error('Drain command error:', error);
                 });
+            return;
+        }
+
+        if (id === 'inlet') {
+            const next = !currentInletRun;
+            db.ref('control/inlet').update({ run: next, requested_at: Date.now() })
+                .catch(error => alert('ส่งคำสั่งน้ำเข้าไม่สำเร็จ: ' + (error.message || 'ตรวจสอบ Firebase Rules')));
             return;
         }
 
