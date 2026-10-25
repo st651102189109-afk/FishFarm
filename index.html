@@ -41,6 +41,12 @@
         
         .row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
         .row:last-child { border: none; }
+        #settings-panel .row { gap: 10px; align-items: center; }
+        #settings-panel .row > span { flex: 1; font-size: .88rem; }
+        #settings-panel .input-group { gap: 5px; padding: 6px 8px; }
+        #settings-panel input[type="number"] { width: 65px; }
+        #settings-panel .time-input { width: 82px; }
+        @media (max-width: 420px) { #settings-panel .row { align-items: flex-start; flex-direction: column; } #settings-panel .row .input-group { align-self: flex-end; } }
 
         .input-group { display: flex; align-items: center; background: #f8fafc; padding: 6px 12px; border-radius: 14px; border: 1px solid #e2e8f0; }
         .num-input { border: none; background: transparent; font-family: 'Kanit'; font-size: 1rem; color: var(--primary); width: 45px; text-align: right; outline: none; font-weight: 500; }
@@ -100,11 +106,24 @@
             <p style="font-size:0.75rem;color:#64748b;margin:12px 0 0;">ระบบเปลี่ยนถ่ายน้ำทำงานอัตโนมัติตามค่าความขุ่น ค่า pH และระดับน้ำที่กำหนดไว้ในโค้ด ESP32</p>
         </div>
 
-        <div class="panel panel-secondary">
-            <div class="panel-header" style="color:var(--secondary);"><i class="fas fa-clock"></i> ตารางการทำงานจากโค้ด ESP32</div>
-            <div class="row"><span>ให้อาหารปลา</span><strong>09:00 และ 16:00 น.</strong></div>
-            <div class="row"><span>ระยะเวลามอเตอร์ให้อาหาร</span><strong>10 วินาที/ครั้ง</strong></div>
-            <div class="row"><span>ปั๊มน้ำ/ปั๊มอากาศ</span><strong>05:00–11:00 และ 15:00–21:00 น.</strong></div>
+        <div class="panel panel-secondary" id="settings-panel">
+            <div class="panel-header" style="color:var(--secondary);"><i class="fas fa-sliders"></i> ตั้งค่าการทำงานผ่านแอป</div>
+            <div class="row">
+                <span>เปิดระบบให้อาหารอัตโนมัติ</span>
+                <label class="switch"><input type="checkbox" id="cfg-feed-en" checked><span class="slider"></span></label>
+            </div>
+            <div class="row"><span>เวลาให้อาหารรอบที่ 1</span><div class="input-group"><input type="time" id="cfg-feed-t1" class="time-input" value="09:00"></div></div>
+            <div class="row"><span>ระยะเวลารอบที่ 1 (นาที:วินาที)</span><div class="input-group"><input type="text" id="cfg-feed-d1" class="dur-input" value="00:10" maxlength="5" placeholder="00:10" oninput="fmtDuration(this)"></div></div>
+            <div class="row"><span>เวลาให้อาหารรอบที่ 2</span><div class="input-group"><input type="time" id="cfg-feed-t2" class="time-input" value="16:00"></div></div>
+            <div class="row"><span>ระยะเวลารอบที่ 2 (นาที:วินาที)</span><div class="input-group"><input type="text" id="cfg-feed-d2" class="dur-input" value="00:10" maxlength="5" placeholder="00:10" oninput="fmtDuration(this)"></div></div>
+            <div class="row"><span>ช่วงพักปั๊มหลังถึงเวลาให้อาหาร (นาที)</span><div class="input-group"><input type="number" id="cfg-feed-pause" class="num-input" style="width:55px" min="1" max="120" value="20"></div></div>
+            <div class="row"><span>ปั๊มรอบเช้า เริ่ม–หยุด</span><div class="input-group"><input type="time" id="cfg-pump-ms" class="time-input" value="05:00"><span>–</span><input type="time" id="cfg-pump-me" class="time-input" value="11:00"></div></div>
+            <div class="row"><span>ปั๊มรอบบ่าย เริ่ม–หยุด</span><div class="input-group"><input type="time" id="cfg-pump-as" class="time-input" value="15:00"><span>–</span><input type="time" id="cfg-pump-ae" class="time-input" value="21:00"></div></div>
+            <div class="row"><span>ระดับหยุดระบายน้ำ (ซม.)</span><div class="input-group"><input type="number" id="cfg-water-drain" class="num-input" style="width:60px" min="1" max="69" step="0.5" value="25"></div></div>
+            <div class="row"><span>ระดับหยุดเติมน้ำ (ซม.)</span><div class="input-group"><input type="number" id="cfg-water-fill" class="num-input" style="width:60px" min="2" max="70" step="0.5" value="35"></div></div>
+            <button id="save-settings" class="btn btn-blue" onclick="saveSettings()"><i class="fas fa-floppy-disk"></i> บันทึกการตั้งค่า</button>
+            <p style="font-size:0.75rem;color:#64748b;margin:12px 0 0;">ค่าที่บันทึกจะส่งไปยัง Firebase และ ESP32 จะอ่านค่าภายในประมาณ 5 วินาที โปรดตั้งเวลารอบให้อาหารให้ห่างกัน และตรวจสอบช่วงพักปั๊มก่อนใช้งาน</p>
+            <div id="settings-message" role="status" style="font-size:0.8rem;margin-top:8px;"></div>
         </div>
     </div>
 
@@ -165,6 +184,110 @@
         const el = document.getElementById(id);
         el.innerText = active ? onText : offText;
         el.style.color = active ? 'var(--green)' : '#64748b';
+    }
+
+    let configLoaded = false;
+    const configInputIds = ['cfg-feed-en','cfg-feed-t1','cfg-feed-d1','cfg-feed-t2','cfg-feed-d2','cfg-feed-pause','cfg-pump-ms','cfg-pump-me','cfg-pump-as','cfg-pump-ae','cfg-water-drain','cfg-water-fill'];
+    configInputIds.forEach(id => {
+        const el = document.getElementById(id);
+        el.addEventListener('focus', () => { el.dataset.editing = '1'; });
+        el.addEventListener('blur', () => { delete el.dataset.editing; });
+    });
+    function anyConfigInputEditing() {
+        return configInputIds.some(id => document.getElementById(id).dataset.editing === '1');
+    }
+    function fmtDuration(input) {
+        let digits = input.value.replace(/\D/g, '').slice(0, 4);
+        if (digits.length > 2) input.value = digits.slice(0, digits.length - 2) + ':' + digits.slice(-2);
+        else input.value = digits;
+    }
+    function timeToMinutes(value, fallback) {
+        if (!value || !/^\d{2}:\d{2}$/.test(value)) return fallback;
+        const parts = value.split(':').map(Number);
+        if (parts[0] > 23 || parts[1] > 59) return fallback;
+        return parts[0] * 60 + parts[1];
+    }
+    function minutesToTime(value, fallback) {
+        const n = Number(value);
+        if (!Number.isFinite(n) || n < 0 || n >= 1440) return fallback;
+        return String(Math.floor(n / 60)).padStart(2, '0') + ':' + String(n % 60).padStart(2, '0');
+    }
+    function durationToSeconds(value, fallback) {
+        if (!value || !/^\d{1,2}:\d{2}$/.test(value)) return fallback;
+        const parts = value.split(':').map(Number);
+        if (parts[1] > 59) return fallback;
+        const total = parts[0] * 60 + parts[1];
+        return total >= 1 && total <= 3600 ? total : fallback;
+    }
+    function secondsToDuration(value, fallback) {
+        const n = Number(value);
+        if (!Number.isFinite(n) || n < 1 || n > 3600) return fallback;
+        return String(Math.floor(n / 60)).padStart(2, '0') + ':' + String(n % 60).padStart(2, '0');
+    }
+    function loadSettings(c) {
+        if (anyConfigInputEditing()) return;
+        const d = c || {};
+        document.getElementById('cfg-feed-en').checked = d.feed_en !== undefined ? !!d.feed_en : true;
+        document.getElementById('cfg-feed-t1').value = minutesToTime(d.feed_t1, '09:00');
+        document.getElementById('cfg-feed-d1').value = secondsToDuration(d.feed_d1, '00:10');
+        document.getElementById('cfg-feed-t2').value = minutesToTime(d.feed_t2, '16:00');
+        document.getElementById('cfg-feed-d2').value = secondsToDuration(d.feed_d2, '00:10');
+        document.getElementById('cfg-feed-pause').value = d.feed_pause_min !== undefined ? d.feed_pause_min : 20;
+        document.getElementById('cfg-pump-ms').value = minutesToTime(d.pump_m_start, '05:00');
+        document.getElementById('cfg-pump-me').value = minutesToTime(d.pump_m_end, '11:00');
+        document.getElementById('cfg-pump-as').value = minutesToTime(d.pump_a_start, '15:00');
+        document.getElementById('cfg-pump-ae').value = minutesToTime(d.pump_a_end, '21:00');
+        document.getElementById('cfg-water-drain').value = d.water_drain_level !== undefined ? d.water_drain_level : 25;
+        document.getElementById('cfg-water-fill').value = d.water_fill_level !== undefined ? d.water_fill_level : 35;
+        configLoaded = true;
+    }
+    db.ref('config').on('value', snap => loadSettings(snap.val() || {}), error => {
+        const msg = document.getElementById('settings-message');
+        msg.style.color = 'var(--red)';
+        msg.textContent = 'อ่านค่าตั้งค่าไม่สำเร็จ: ' + (error.message || 'ตรวจสอบ Firebase Rules');
+    });
+    function saveSettings() {
+        if (!firebaseConnected) { alert('ยังเชื่อมต่อ Firebase ไม่ได้ จึงบันทึกการตั้งค่าไม่ได้'); return; }
+        const t1 = document.getElementById('cfg-feed-t1').value;
+        const t2 = document.getElementById('cfg-feed-t2').value;
+        const d1 = durationToSeconds(document.getElementById('cfg-feed-d1').value, 10);
+        const d2 = durationToSeconds(document.getElementById('cfg-feed-d2').value, 10);
+        const pause = Number(document.getElementById('cfg-feed-pause').value);
+        const ms = document.getElementById('cfg-pump-ms').value;
+        const me = document.getElementById('cfg-pump-me').value;
+        const as = document.getElementById('cfg-pump-as').value;
+        const ae = document.getElementById('cfg-pump-ae').value;
+        const drain = Number(document.getElementById('cfg-water-drain').value);
+        const fill = Number(document.getElementById('cfg-water-fill').value);
+        if (!t1 || !t2 || !ms || !me || !as || !ae) { alert('กรุณากำหนดเวลาให้ครบทุกช่อง'); return; }
+        if (t1 === t2) { alert('เวลาให้อาหารรอบที่ 1 และ 2 ต้องไม่ตรงกัน'); return; }
+        if (!Number.isInteger(pause) || pause < 1 || pause > 120) { alert('ช่วงพักปั๊มต้องอยู่ระหว่าง 1–120 นาที'); return; }
+        if (drain < 1 || fill > 70 || drain >= fill) { alert('ระดับหยุดระบายน้ำต้องน้อยกว่าระดับหยุดเติมน้ำ และอยู่ในช่วงที่กำหนด'); return; }
+        const config = {
+            feed_en: document.getElementById('cfg-feed-en').checked,
+            feed_t1: timeToMinutes(t1, 540), feed_d1: d1,
+            feed_t2: timeToMinutes(t2, 960), feed_d2: d2,
+            feed_pause_min: pause,
+            pump_m_start: timeToMinutes(ms, 300), pump_m_end: timeToMinutes(me, 660),
+            pump_a_start: timeToMinutes(as, 900), pump_a_end: timeToMinutes(ae, 1260),
+            water_drain_level: drain, water_fill_level: fill,
+            updated_at: Date.now()
+        };
+        if (config.pump_m_start >= config.pump_m_end || config.pump_a_start >= config.pump_a_end) {
+            alert('เวลาเริ่มปั๊มต้องมาก่อนเวลาหยุดปั๊มในแต่ละรอบ'); return;
+        }
+        const btn = document.getElementById('save-settings');
+        const msg = document.getElementById('settings-message');
+        btn.disabled = true; btn.style.opacity = '0.65';
+        msg.style.color = '#64748b'; msg.textContent = 'กำลังบันทึกการตั้งค่า...';
+        db.ref('config').update(config).then(() => {
+            msg.style.color = 'var(--green)';
+            msg.textContent = 'บันทึกสำเร็จ ระบบ ESP32 จะรับค่าภายในประมาณ 5 วินาที';
+        }).catch(error => {
+            msg.style.color = 'var(--red)';
+            msg.textContent = 'บันทึกไม่สำเร็จ: ' + (error.message || 'ตรวจสอบ Firebase Rules');
+            console.error('Save settings error:', error);
+        }).finally(() => { btn.disabled = false; btn.style.opacity = '1'; });
     }
 
     db.ref().on('value', (snapshot) => {
@@ -260,7 +383,7 @@
             document.getElementById('b-feeder').disabled = true;
             db.ref('control/feeder').update({ run: true, requested_at: Date.now() })
                 .then(() => {
-                    alert('ส่งคำสั่งแล้ว ระบบจะให้อาหารได้เฉพาะช่วง 09:00–09:20 น. หรือ 16:00–16:20 น. ตามเงื่อนไขในโค้ด ESP32');
+                    alert('ส่งคำสั่งแล้ว ระบบจะตรวจสอบช่วงเวลาให้อาหารและความปลอดภัยตามค่าที่บันทึกไว้');
                 })
                 .catch((error) => {
                     alert('ส่งคำสั่งให้อาหารไม่สำเร็จ: ' + (error && error.message ? error.message : 'ตรวจสอบ Firebase Rules'));
