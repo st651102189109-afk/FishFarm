@@ -81,94 +81,51 @@
 </header>
 
 <div class="container">
-    <!-- TAB AUTO -->
+    <!-- TAB AUTO: แสดงเฉพาะข้อมูลที่ firmware ส่งมาจริง -->
     <div id="tab-auto" class="tab-content active">
         <div class="sensor-grid">
-            <div class="sensor-card"><i class="fas fa-water" style="color:#0288d1"></i><span class="val" id="lvl-v">--</span><small>ระดับน้ำ</small></div>
-            <div class="sensor-card"><i class="fas fa-bolt" style="color:#fbc02d"></i><span class="val" id="tds-v">--</span><small>ความขุ่น</small></div>
-            <div class="sensor-card"><i class="fas fa-temperature-high" style="color:#f44336"></i><span class="val" id="temp-v">--</span><small>อุณหภูมิ</small></div>
+            <div class="sensor-card"><i class="fas fa-water" style="color:#0288d1"></i><span class="val" id="lvl-v">--</span><small>ระดับน้ำ (ซม.)</small></div>
+            <div class="sensor-card"><i class="fas fa-bolt" style="color:#fbc02d"></i><span class="val" id="tds-v">--</span><small>ความขุ่น (ค่าโดยประมาณ)</small></div>
+            <div class="sensor-card"><i class="fas fa-temperature-high" style="color:#f44336"></i><span class="val" id="temp-v">--</span><small>อุณหภูมิ (°C)</small></div>
             <div class="sensor-card"><i class="fas fa-flask" style="color:#9c27b0"></i><span class="val" id="ph-v">--</span><small>ค่า pH</small></div>
         </div>
 
         <div class="panel">
-            <div class="panel-header"><i class="fas fa-robot"></i> ระบบถ่ายน้ำอัตโนมัติ</div>
-            <div class="row">
-                <div style="flex:1;">
-                    <span style="font-size:0.9rem;"><i class="fas fa-vial"></i> ค่าความขุ่น ></span>
-                    <div style="font-size:0.65rem; color:#94a3b8;">เปิดวาล์วนาน (นาที:วินาที)</div>
-                </div>
-                <div style="display:flex; align-items:center; gap:6px;">
-                    <div class="input-group"><input type="number" id="l-tds" class="num-input" onchange="save()"></div>
-                    <div class="input-group"><input type="text" id="d-tds" class="dur-input" placeholder="05:00" oninput="fmtSS(this)" onchange="save()"></div>
-                    <label class="switch"><input type="checkbox" id="e-tds" onchange="save()"><span class="slider"></span></label>
-                </div>
-            </div>
-            <div class="row">
-                <div style="flex:1;">
-                    <span style="font-size:0.9rem;"><i class="fas fa-skull-crossbones"></i> ค่า pH <</span>
-                    <div style="font-size:0.65rem; color:#94a3b8;">เปิดวาล์วนาน (นาที:วินาที)</div>
-                </div>
-                <div style="display:flex; align-items:center; gap:6px;">
-                    <div class="input-group"><input type="number" step="0.1" id="l-ph" class="num-input" onchange="save()"></div>
-                    <div class="input-group"><input type="text" id="d-ph" class="dur-input" placeholder="05:00" oninput="fmtSS(this)" onchange="save()"></div>
-                    <label class="switch"><input type="checkbox" id="e-ph" onchange="save()"><span class="slider"></span></label>
-                </div>
-            </div>
+            <div class="panel-header"><i class="fas fa-robot"></i> สถานะระบบอัตโนมัติ</div>
+            <div class="row"><span><i class="fas fa-water"></i> ระบบเปลี่ยนถ่ายน้ำ</span><strong id="water-change-status">รอข้อมูล</strong></div>
+            <div class="row"><span>สาเหตุการเปลี่ยนน้ำล่าสุด</span><span id="water-change-reason">--</span></div>
+            <div class="row"><span><i class="fas fa-ruler-vertical"></i> เซนเซอร์ระดับน้ำ</span><strong id="water-sensor-status">รอข้อมูล</strong></div>
+            <div class="row"><span><i class="fas fa-utensils"></i> มอเตอร์ให้อาหาร</span><strong id="feeding-status">รอข้อมูล</strong></div>
+            <div class="row"><span><i class="fas fa-fan"></i> ปั๊มน้ำ/ปั๊มอากาศ</span><strong id="pump-status">รอข้อมูล</strong></div>
+            <p style="font-size:0.75rem;color:#64748b;margin:12px 0 0;">ระบบเปลี่ยนถ่ายน้ำทำงานอัตโนมัติตามค่าความขุ่น ค่า pH และระดับน้ำที่กำหนดไว้ในโค้ด ESP32</p>
         </div>
 
         <div class="panel panel-secondary">
-            <div class="panel-header" style="color: var(--secondary); display:flex; justify-content:space-between; width:100%;">
-                <span><i class="fas fa-clock"></i> ระบบให้อาหารอัตโนมัติ</span>
-                <label class="switch"><input type="checkbox" id="e-f" onchange="save()"><span class="slider"></span></label>
-            </div>
-            <div class="row">
-                <span><i class="fas fa-sun"></i> รอบเช้า / ระยะเวลา</span>
-                <div class="input-group">
-                    <input type="time" id="f-t1" class="time-input" onchange="save()">
-                    <input type="text" id="f-d1" class="dur-input" style="color:var(--secondary)" placeholder="00:05" oninput="fmtSS(this)" onchange="save()">
-                </div>
-            </div>
-            <div class="row">
-                <span><i class="fas fa-moon"></i> รอบเย็น / ระยะเวลา</span>
-                <div class="input-group">
-                    <input type="time" id="f-t2" class="time-input" onchange="save()">
-                    <input type="text" id="f-d2" class="dur-input" style="color:var(--secondary)" placeholder="00:05" oninput="fmtSS(this)" onchange="save()">
-                </div>
-            </div>
+            <div class="panel-header" style="color:var(--secondary);"><i class="fas fa-clock"></i> ตารางการทำงานจากโค้ด ESP32</div>
+            <div class="row"><span>ให้อาหารปลา</span><strong>09:00 และ 16:00 น.</strong></div>
+            <div class="row"><span>ระยะเวลามอเตอร์ให้อาหาร</span><strong>10 วินาที/ครั้ง</strong></div>
+            <div class="row"><span>ปั๊มน้ำ/ปั๊มอากาศ</span><strong>05:00–11:00 และ 15:00–21:00 น.</strong></div>
         </div>
     </div>
 
-    <!-- TAB MANUAL (อัปเกรดเป็น 2 วาล์ว: วาล์วน้ำเข้า และ วาล์วน้ำออก) -->
+    <!-- TAB MANUAL: เฉพาะคำสั่งที่ firmware รองรับ -->
     <div id="tab-man" class="tab-content">
-        <!-- วาล์วน้ำเข้า (Water IN) -->
-        <div class="panel">
-            <div class="panel-header">
-                <span><i class="fas fa-faucet"></i> สั่งเติมน้ำเข้า (Water IN)</span>
-                <div id="l-in" class="status-light" style="margin-left: auto;"></div>
-            </div>
-            <button id="b-in" class="btn btn-blue" onclick="ctrl('in')"><i class="fas fa-play"></i> เปิดวาล์วน้ำเข้า</button>
-        </div>
-        
-        <!-- วาล์วน้ำออก / ระบายน้ำ (Water OUT) -->
         <div class="panel panel-secondary">
-            <div class="panel-header" style="color: var(--secondary);">
-                <span><i class="fas fa-shower"></i> สั่งระบายน้ำทิ้ง (Water OUT)</span>
-                <div id="l-drain" class="status-light" style="margin-left: auto;"></div>
+            <div class="panel-header" style="color:var(--secondary);">
+                <span><i class="fas fa-shower"></i> สั่งระบายน้ำทิ้ง</span>
+                <div id="l-drain" class="status-light" style="margin-left:auto;"></div>
             </div>
             <button id="b-drain" class="btn btn-cyan" onclick="ctrl('drain')"><i class="fas fa-play"></i> เปิดวาล์วน้ำออก</button>
+            <p style="font-size:0.75rem;color:#64748b;margin:12px 0 0;">คำสั่งนี้จะทำงานเมื่อเซนเซอร์ระดับน้ำปกติและไม่มีการเปลี่ยนถ่ายน้ำอัตโนมัติ ระบบจะหยุดระบายน้ำเมื่อระดับน้ำถึง 25 ซม.</p>
         </div>
 
-        <!-- ให้อาหารทันที -->
-        <div class="panel" style="border-left-color: var(--purple);">
-            <div class="panel-header" style="color: var(--purple);">
-                <span><i class="fas fa-cookie-bite"></i> สั่งให้อาหารทันที</span>
-                <div id="l-feeder" class="status-light" style="margin-left: auto;"></div>
+        <div class="panel" style="border-left-color:var(--purple);">
+            <div class="panel-header" style="color:var(--purple);">
+                <span><i class="fas fa-cookie-bite"></i> สั่งให้อาหารปลา</span>
+                <div id="l-feeder" class="status-light" style="margin-left:auto;"></div>
             </div>
-            <div class="row" style="border:none;">
-                <span style="font-size:0.85rem;">ระบุเวลา (นาที:วินาที)</span>
-                <div class="input-group"><input type="text" id="m-dur-f" class="dur-input" style="color:var(--purple)" placeholder="00:05" oninput="fmtSS(this)"></div>
-            </div>
-            <button id="b-feeder" class="btn" style="background: var(--purple); color: white;" onclick="ctrl('feeder')"><i class="fas fa-utensils"></i> เริ่มให้อาหาร</button>
+            <button id="b-feeder" class="btn" style="background:var(--purple);color:white;" onclick="ctrl('feeder')"><i class="fas fa-utensils"></i> ส่งคำสั่งให้อาหาร</button>
+            <p style="font-size:0.75rem;color:#64748b;margin:12px 0 0;">เฟิร์มแวร์รับคำสั่งนี้เฉพาะช่วง 09:00–09:20 น. หรือ 16:00–16:20 น. และมอเตอร์ทำงานครั้งละ 10 วินาทีตามโค้ด ESP32 ไม่สามารถกำหนดระยะเวลาจากแอปได้</p>
         </div>
     </div>
 </div>
@@ -179,132 +136,141 @@
 </nav>
 
 <script>
-    // เชื่อมต่อ Firebase Realtime Database
-    const firebaseConfig = { databaseURL: "https://fishfarm-iot-a8002-default-rtdb.asia-southeast1.firebasedatabase.app" }; 
-    firebase.initializeApp(firebaseConfig);
+    // Firebase Realtime Database: ใช้ path ให้ตรงกับ firmware ในไฟล์ .ino
+    const firebaseConfig = {
+        databaseURL: "https://fishfarm-iot-a8002-default-rtdb.asia-southeast1.firebasedatabase.app"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     let firebaseConnected = false;
     let lastSensorUpdateMs = 0;
-    let lastDbSnapshot = null;
+    let currentDrainRun = false;
+    let feedCommandPending = false;
 
-    // แสดงสถานะการเชื่อมต่อจริงจาก Firebase และตรวจข้อมูลเซนเซอร์ค้าง
     function setConnectionStatus(ok, message) {
         const dot = document.getElementById('dot');
         const label = document.getElementById('status-text');
-        if (!dot || !label) return;
         dot.style.color = ok ? '#4caf50' : '#f44336';
         label.innerText = message;
     }
 
-    function fmtSS(i){ let v=i.value.replace(/\D/g,''); if(v.length>4)v=v.slice(0,4); i.value=v.length>=3?v.slice(0,2)+':'+v.slice(2):v; }
-    function toS(s){ if(!s||!s.includes(':'))return 5; const p=s.split(':'); return (parseInt(p[0])||0)*60+(parseInt(p[1])||0); }
-    function toM(s){ if(!s)return "00:00"; return (Math.floor(s/60)).toString().padStart(2,'0')+":"+(s%60).toString().padStart(2,'0'); }
-    function tab(id, b){ document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); document.getElementById(id).classList.add('active'); b.classList.add('active'); }
+    function tab(id, button) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        button.classList.add('active');
+    }
 
-    db.ref().on("value", (snap) => {
-        const d = snap.val();
-        if (!d) {
-            firebaseConnected = true;
-            setConnectionStatus(true, "Connected · รอข้อมูลจาก ESP32");
-            return;
-        }
+    function showStatus(id, active, onText, offText) {
+        const el = document.getElementById(id);
+        el.innerText = active ? onText : offText;
+        el.style.color = active ? 'var(--green)' : '#64748b';
+    }
+
+    db.ref().on('value', (snapshot) => {
         firebaseConnected = true;
-        lastDbSnapshot = d;
-        setConnectionStatus(true, "Firebase Connected");
-        
-        // อัปเดตค่าเซนเซอร์
-        if(d.sensor){
-            const reportedLastSeen = d.status && Number(d.status.last_seen) > 1700000000 ? Number(d.status.last_seen) * 1000 : 0;
-            lastSensorUpdateMs = reportedLastSeen || Date.now();
-            document.getElementById('lvl-v').innerText = (d.sensor.level !== undefined ? d.sensor.level : "--") + "%";
-            document.getElementById('tds-v').innerText = d.sensor.tds !== undefined ? d.sensor.tds : "--";
-            document.getElementById('temp-v').innerText = d.sensor.temp !== undefined ? d.sensor.temp.toFixed(1) + "°" : "--";
-            document.getElementById('ph-v').innerText = d.sensor.ph !== undefined ? d.sensor.ph.toFixed(1) : "--";
-            // สถานะ ESP32 จะแสดง Online ชั่วคราวเมื่อมีข้อมูลเซนเซอร์เข้ามา
-            setConnectionStatus(true, "ESP32 Online");
+        const data = snapshot.val() || {};
+        const sensor = data.sensor || {};
+        const status = data.status || {};
+        const control = data.control || {};
+
+        if (Object.keys(sensor).length) {
+            // Firmware ส่ง level เป็นเปอร์เซ็นต์และ level_cm เป็นระดับน้ำจริงในหน่วยเซนติเมตร
+            document.getElementById('lvl-v').innerText = sensor.level_cm !== undefined
+                ? Number(sensor.level_cm).toFixed(1)
+                : '--';
+            document.getElementById('tds-v').innerText = sensor.turbidity !== undefined
+                ? sensor.turbidity
+                : (sensor.tds !== undefined ? sensor.tds : '--');
+            document.getElementById('temp-v').innerText = sensor.temp !== undefined
+                ? Number(sensor.temp).toFixed(1)
+                : '--';
+            document.getElementById('ph-v').innerText = sensor.ph !== undefined
+                ? Number(sensor.ph).toFixed(1)
+                : '--';
+            // Firmware ปัจจุบันไม่ได้เขียน status.last_seen จึงใช้เวลาที่ได้รับ snapshot ล่าสุด
+            lastSensorUpdateMs = Date.now();
+            setConnectionStatus(true, 'ESP32 Online · Firebase Connected');
         } else {
-            document.getElementById('lvl-v').innerText = "--";
-            document.getElementById('tds-v').innerText = "--";
-            document.getElementById('temp-v').innerText = "--";
-            document.getElementById('ph-v').innerText = "--";
-            setConnectionStatus(true, "Connected · รอ ESP32");
-        }
-        
-        // อัปเดตสถานะปุ่มและไฟสถานะรีเลย์ (Control)
-        if(d.control) {
-            // 1. วาล์วน้ำเข้า (Water IN)
-            const rin = d.control.in && d.control.in.run;
-            document.getElementById('b-in').className = rin ? "btn btn-stop" : "btn btn-blue";
-            document.getElementById('b-in').innerHTML = rin ? '<i class="fas fa-stop"></i> ปิดวาล์วน้ำเข้า' : '<i class="fas fa-play"></i> เปิดวาล์วน้ำเข้า';
-            document.getElementById('l-in').className = rin ? "status-light light-on" : "status-light";
-
-            // 2. วาล์วน้ำออก (Water OUT / Drain)
-            const rd = d.control.drain && d.control.drain.run;
-            document.getElementById('b-drain').className = rd ? "btn btn-stop" : "btn btn-cyan";
-            document.getElementById('b-drain').innerHTML = rd ? '<i class="fas fa-stop"></i> ปิดวาล์วน้ำออก' : '<i class="fas fa-play"></i> เปิดวาล์วน้ำออก';
-            document.getElementById('l-drain').className = rd ? "status-light light-on" : "status-light";
-
-            // 3. ระบบให้อาหาร
-            const rf = d.control.feeder && d.control.feeder.run;
-            document.getElementById('b-feeder').className = rf ? "btn btn-stop" : "btn";
-            document.getElementById('b-feeder').style.background = rf ? "var(--red)" : "var(--purple)";
-            document.getElementById('b-feeder').innerHTML = rf ? '<i class="fas fa-stop"></i> หยุดทำงาน' : '<i class="fas fa-utensils"></i> เริ่มให้อาหาร';
-            document.getElementById('l-feeder').className = rf ? "status-light light-on" : "status-light";
+            document.getElementById('lvl-v').innerText = '--';
+            document.getElementById('tds-v').innerText = '--';
+            document.getElementById('temp-v').innerText = '--';
+            document.getElementById('ph-v').innerText = '--';
+            setConnectionStatus(true, 'Firebase Connected · รอข้อมูลจาก ESP32');
         }
 
-        // อัปเดตการตั้งค่า Config
-        if(d.config && document.activeElement.tagName !== 'INPUT') {
-            const c = d.config;
-            document.getElementById('e-tds').checked = c.tds_en; document.getElementById('l-tds').value = c.tds_l; document.getElementById('d-tds').value = toM(c.tds_d);
-            document.getElementById('e-ph').checked = c.ph_en; document.getElementById('l-ph').value = c.ph_l; document.getElementById('d-ph').value = toM(c.ph_d);
-            document.getElementById('e-f').checked = c.f_en; 
-            document.getElementById('f-t1').value = c.f_t1; document.getElementById('f-d1').value = toM(c.f_d1);
-            document.getElementById('f-t2').value = c.f_t2; document.getElementById('f-d2').value = toM(c.f_d2);
-        }
+        showStatus('water-change-status', status.water_change === true,
+            'กำลังเปลี่ยนถ่ายน้ำ', 'ไม่ได้เปลี่ยนถ่ายน้ำ');
+        document.getElementById('water-change-reason').innerText = status.water_change_reason || '--';
+        showStatus('water-sensor-status', status.water_level_sensor_ok === true,
+            'ปกติ', 'ผิดปกติ/ยังไม่มีข้อมูล');
+        showStatus('feeding-status', status.feeding === true,
+            'กำลังให้อาหาร', 'หยุดทำงาน');
+        showStatus('pump-status', status.pump_on === true,
+            'กำลังทำงาน', 'หยุดทำงาน');
+
+        // คำสั่งระบายน้ำที่ .ino อ่านจริง: /control/drain/run
+        currentDrainRun = !!(control.drain && control.drain.run);
+        const drainButton = document.getElementById('b-drain');
+        drainButton.className = currentDrainRun ? 'btn btn-stop' : 'btn btn-cyan';
+        drainButton.innerHTML = currentDrainRun
+            ? '<i class="fas fa-stop"></i> ยกเลิกการระบายน้ำ'
+            : '<i class="fas fa-play"></i> เปิดวาล์วน้ำออก';
+        document.getElementById('l-drain').className = currentDrainRun
+            ? 'status-light light-on' : 'status-light';
+
+        // การให้อาหารเป็น trigger ชั่วขณะใน firmware ไม่ใช่สวิตช์เปิด/ปิดค้าง
+        const isFeeding = status.feeding === true;
+        document.getElementById('l-feeder').className = isFeeding
+            ? 'status-light light-on' : 'status-light';
+        document.getElementById('b-feeder').disabled = feedCommandPending;
+        document.getElementById('b-feeder').style.opacity = feedCommandPending ? '0.65' : '1';
     }, (error) => {
         firebaseConnected = false;
-        setConnectionStatus(false, "Firebase Error: " + (error && error.message ? error.message : "ตรวจสอบ Rules/อินเทอร์เน็ต"));
-        console.error("Firebase read error:", error);
+        setConnectionStatus(false, 'Firebase Error: ' + (error && error.message ? error.message : 'ตรวจสอบอินเทอร์เน็ต/สิทธิ์ฐานข้อมูล'));
+        console.error('Firebase read error:', error);
     });
 
-    // ตรวจว่า ESP32 ส่งข้อมูลล่าสุดหรือไม่ (ป้องกันแสดง Online จากข้อมูลเก่า)
+    // ใช้ตรวจข้อมูลเซนเซอร์ค้าง; firmware อัปโหลดข้อมูลทุก 5 วินาที
     setInterval(() => {
-        if (!firebaseConnected) return;
-        if (lastSensorUpdateMs && Date.now() - lastSensorUpdateMs > 20000) {
-            setConnectionStatus(false, "ESP32 Offline · ข้อมูลเก่าเกิน 20 วินาที");
+        if (firebaseConnected && lastSensorUpdateMs && Date.now() - lastSensorUpdateMs > 20000) {
+            setConnectionStatus(false, 'ESP32 Offline · ไม่ได้รับข้อมูลเกิน 20 วินาที');
         }
     }, 5000);
 
-    function ctrl(id){ 
+    function ctrl(id) {
         if (!firebaseConnected) {
-            alert("ยังเชื่อมต่อ Firebase ไม่ได้ จึงยังส่งคำสั่งไม่ได้");
+            alert('ยังเชื่อมต่อ Firebase ไม่ได้ จึงยังส่งคำสั่งไม่ได้');
             return;
         }
-        const btn = document.getElementById(`b-${id}`);
-        const isR = btn.classList.contains('btn-stop'); 
-        const dur = (id === 'feeder') ? toS(document.getElementById('m-dur-f').value) : 0;
-        // ใช้ชื่อ path เดียวกับ firmware: in, drain, feeder
-        db.ref(`control/${id}`).update({run: !isR, duration: dur, requested_at: Date.now()})
-          .then(() => console.log("Firebase command sent:", id, !isR))
-          .catch((error) => {
-              alert("ส่งคำสั่งไม่สำเร็จ: " + (error && error.message ? error.message : "ตรวจสอบ Firebase Rules"));
-              console.error("Firebase control write error:", error);
-          });
-    }
-    
-    function save(){
-        const config = {
-            tds_en: document.getElementById('e-tds').checked, tds_l: parseInt(document.getElementById('l-tds').value) || 0, tds_d: toS(document.getElementById('d-tds').value),
-            ph_en: document.getElementById('e-ph').checked, ph_l: parseFloat(document.getElementById('l-ph').value) || 0, ph_d: toS(document.getElementById('d-ph').value),
-            f_en: document.getElementById('e-f').checked, f_t1: document.getElementById('f-t1').value || "09:00", f_d1: toS(document.getElementById('f-d1').value),
-            f_t2: document.getElementById('f-t2').value || "16:00", f_d2: toS(document.getElementById('f-d2').value)
-        };
-        db.ref('config').update(config)
-          .then(() => console.log("Firebase settings saved"))
-          .catch((error) => {
-              alert("บันทึกการตั้งค่าไม่สำเร็จ: " + (error && error.message ? error.message : "ตรวจสอบ Firebase Rules"));
-              console.error("Firebase config write error:", error);
-          });
+
+        if (id === 'drain') {
+            db.ref('control/drain/run').set(!currentDrainRun)
+                .then(() => db.ref('control/drain/requested_at').set(Date.now()))
+                .catch((error) => {
+                    alert('ส่งคำสั่งระบายน้ำไม่สำเร็จ: ' + (error && error.message ? error.message : 'ตรวจสอบ Firebase Rules'));
+                    console.error('Drain command error:', error);
+                });
+            return;
+        }
+
+        if (id === 'feeder') {
+            if (feedCommandPending) return;
+            feedCommandPending = true;
+            document.getElementById('b-feeder').disabled = true;
+            db.ref('control/feeder').update({ run: true, requested_at: Date.now() })
+                .then(() => {
+                    alert('ส่งคำสั่งแล้ว ระบบจะให้อาหารได้เฉพาะช่วง 09:00–09:20 น. หรือ 16:00–16:20 น. ตามเงื่อนไขในโค้ด ESP32');
+                })
+                .catch((error) => {
+                    alert('ส่งคำสั่งให้อาหารไม่สำเร็จ: ' + (error && error.message ? error.message : 'ตรวจสอบ Firebase Rules'));
+                    console.error('Feeder command error:', error);
+                })
+                .finally(() => {
+                    feedCommandPending = false;
+                    document.getElementById('b-feeder').disabled = false;
+                });
+        }
     }
 </script>
 </body>
