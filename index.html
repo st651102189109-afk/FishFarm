@@ -101,7 +101,7 @@
             <div class="row"><span><i class="fas fa-ruler-vertical"></i> เซนเซอร์ระดับน้ำ</span><strong id="water-sensor-status">รอข้อมูล</strong></div>
             <div class="row"><span><i class="fas fa-utensils"></i> มอเตอร์ให้อาหาร</span><strong id="feeding-status">รอข้อมูล</strong></div>
             <div class="row"><span><i class="fas fa-fan"></i> ปั๊มน้ำ/ปั๊มอากาศ</span><strong id="pump-status">รอข้อมูล</strong></div>
-            <p style="font-size:0.75rem;color:#64748b;margin:12px 0 0;"> </p>
+            
         </div>
 
         <div class="panel panel-secondary" id="settings-panel">
@@ -300,14 +300,8 @@
             document.getElementById('lvl-v').innerText = sensor.level_cm !== undefined
                 ? Number(sensor.level_cm).toFixed(1)
                 : '--';
-            document.getElementById('tds-v').innerText = sensor.turbidity !== undefined
-                ? sensor.turbidity
-                : (sensor.tds !== undefined ? sensor.tds : '--');
             document.getElementById('temp-v').innerText = sensor.temp !== undefined
                 ? Number(sensor.temp).toFixed(1)
-                : '--';
-            document.getElementById('ph-v').innerText = sensor.ph !== undefined
-                ? Number(sensor.ph).toFixed(1)
                 : '--';
             // Firmware ปัจจุบันไม่ได้เขียน status.last_seen จึงใช้เวลาที่ได้รับ snapshot ล่าสุด
             lastSensorUpdateMs = Date.now();
