@@ -29,7 +29,7 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .sensor-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
+        .sensor-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 20px; }
         .sensor-card { background: white; padding: 15px 5px; border-radius: 20px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
         .sensor-card i { font-size: 1.2rem; margin-bottom: 6px; display: block; }
         .sensor-card .val { font-size: 1rem; font-weight: 600; color: var(--dark); }
@@ -91,9 +91,7 @@
     <div id="tab-auto" class="tab-content active">
         <div class="sensor-grid">
             <div class="sensor-card"><i class="fas fa-water" style="color:#0288d1"></i><span class="val" id="lvl-v">--</span><small>ระดับน้ำ (ซม.)</small></div>
-            <div class="sensor-card"><i class="fas fa-bolt" style="color:#fbc02d"></i><span class="val" id="tds-v">--</span><small>ความขุ่น (ค่าโดยประมาณ)</small></div>
             <div class="sensor-card"><i class="fas fa-temperature-high" style="color:#f44336"></i><span class="val" id="temp-v">--</span><small>อุณหภูมิ (°C)</small></div>
-            <div class="sensor-card"><i class="fas fa-flask" style="color:#9c27b0"></i><span class="val" id="ph-v">--</span><small>ค่า pH</small></div>
         </div>
 
         <div class="panel">
@@ -316,9 +314,7 @@
             setConnectionStatus(true, 'ESP32 Online · Firebase Connected');
         } else {
             document.getElementById('lvl-v').innerText = '--';
-            document.getElementById('tds-v').innerText = '--';
             document.getElementById('temp-v').innerText = '--';
-            document.getElementById('ph-v').innerText = '--';
             setConnectionStatus(true, 'Firebase Connected · รอข้อมูลจาก ESP32');
         }
 
